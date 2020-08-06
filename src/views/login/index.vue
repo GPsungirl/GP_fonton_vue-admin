@@ -3,7 +3,7 @@
     <el-form ref="loginForm" :model="loginForm" :rules="loginFormRules" class="login-form valid_form" auto-complete="on" label-position="left">
 
       <div class="title-container">
-        <h3 class="title">角落里管理平台</h3>
+        <h3 class="title">暂定管理平台</h3>
       </div>
 
       <el-form-item prop="username">
@@ -98,34 +98,34 @@ export default {
       // 先校验
       if(this.m_valid_addForm('loginForm')){
         let param = {
-          username:this.loginForm.username,
-          password:this.$md5(this.loginForm.password),
+          sys_username:this.loginForm.username,
+          sys_password:this.loginForm.password, //this.$md5(this.loginForm.password)
         }
         this.loading = true
-        const res = await this.$http.post(`${commonUrl.baseUrl}/web/login`, qs.stringify(param));
+        const res = await this.$http.post(`${commonUrl.baseUrl}/manage/login/toLogin`, param);
+        console.log(res)
+
         if(res.data.code == '0000'){
-          // console.log(res)
-          // 存roleId
-          this.$store.commit('user/SET_ROLEID', res.data.data.sysRole.id)
-          localStorage.setItem('pp_roleId',JSON.stringify(res.data.data.sysRole.id))
+
+          // 存roleId角色id
+          this.$store.commit('user/SET_ROLEID', res.data.data.sysuser.roleid)
+          localStorage.setItem('pp_roleId',res.data.data.sysuser.roleid)
+          // 存 userId用户id
+          this.$store.commit('user/SET_USERID', res.data.data.sysuser.sys_userid)
+          localStorage.setItem('pp_userId',res.data.data.sysuser.sys_userid)
+          // 存 real_name用户名
+          this.$store.commit('user/SET_REALNAME', res.data.data.sysuser.sys_username)
+          localStorage.setItem('pp_real_name',res.data.data.sysuser.sys_username)
+
           // 存 招商中心编号 merchant_center_code
-          this.$store.commit('user/SET_MERCHANT_CENTER_CODE', res.data.data.user.merchant_center_code)
-          localStorage.setItem('pp_merchant_center_code',JSON.stringify(res.data.data.user.merchant_center_code))
+          this.$store.commit('user/SET_MERCHANT_CENTER_CODE', res.data.data.sysuser.sys_usertype)
+          localStorage.setItem('pp_merchant_center_code',res.data.data.sysuser.sys_usertype)
           // 存roles  String:   res.data.data.sysRole.role_name
-          //this.$store.commit('user/SET_ROLES', ['admin']) // 早期先写固定值，让后端写下，roles: ['admin']
+          // this.$store.commit('user/SET_ROLES', ['admin']) // 早期先写固定值，让后端写下，roles: ['admin']
           // 存 token
           // const authorization = res.headers.authorization;  //令牌
           // this.$store.commit('user/SET_TOKEN', authorization) //请求用户信息
           // setToken(authorization) // 存到cookie里面
-
-          // 存 userId
-          this.$store.commit('user/SET_USERID', res.data.data.user.id)
-          localStorage.setItem('pp_userId',JSON.stringify(res.data.data.user.id))
-
-          // 存 real_name
-          this.$store.commit('user/SET_REALNAME', res.data.data.user.real_name)
-          localStorage.setItem('pp_real_name',res.data.data.user.real_name)
-
           this.loading = false
           this.$router.push({path: '/'}) //这里 这么写 ？
 

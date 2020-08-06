@@ -21,16 +21,45 @@ function setServeMap(routerMap) {
   console.log(routerMap)
   //深克隆
   let cloneData = JSON.parse(JSON.stringify(routerMap))
-
-  // 父级id ===  子级 pid
-  return cloneData.filter(father => {
-
-    let branchArr = cloneData.filter(child => father['id'] == child['pid']);
-    branchArr.length > 0 ? father['children'] = branchArr : ''
-
-    return father['pid'] == 0 // 目前一级 pid：0
+  return cloneData.map(val=>{
+    return modifyMenu(val)
   })
 
+  
+  // 父级id ===  子级 pid
+  // return cloneData.filter(father => {
+
+  //   let branchArr = cloneData.filter(child => father['id'] == child['pid']);
+  //   branchArr.length > 0 ? father['children'] = branchArr : ''
+
+  //   return father['pid'] == 0 // 目前一级 pid：0
+  // })
+
+}
+
+// 递归处理菜单
+function modifyMenu(data){
+  // 一级菜单特有属性
+  if(data.pid == 0){
+    data['component']  = 'Layout';
+    data['alwaysShow'] = true;
+  }else{ //其他子级需要 component为path对应的值
+    data['component'] = data.path.startsWith('/')?data.path.slice(1):data.path;
+  }
+  //data['path'] = data.authority.startsWith('/')?data.authority:'/'+data.authority;
+  data['name'] = data.functionname;
+  data['meta'] = {
+    title: data.functionname,
+    icon: data.path.slice(1)
+  }
+  if(data.subAuthority && data.pid == 0){
+    data['children'] = [];
+    data.subAuthority.map(item=>{
+      data['children'].push(modifyMenu(item))
+    })
+  }
+  return data;
+  
 }
 // 修正数据
 function modifyKeys(data) {
@@ -107,6 +136,26 @@ const mutations = {
 }
 const fya_routerMap = {
   Layout: () => import('@/layout/index'),
+  // *****最新
+  // 1**系统管理 /management
+  roleLIst: () => import('@/views/roleLIst/roleLIst'), //权限组管理
+  userList: () => import('@/views/userList/userList'), //操作员管理
+
+  // **  
+
+
+
+
+
+
+
+
+
+// =================================================================================================================
+
+
+
+
   // 招商中心管理  merchantCenter
   merchantAgent: () => import('@/views/merchantAgent/merchantAgent'), //招商中心机构管理
   merchantUser: () => import('@/views/merchantUser/merchantUser'), // 招商中心人员管理
@@ -118,15 +167,21 @@ const fya_routerMap = {
   agentAccount: () => import('@/views/agentAccount/agentAccount'), //上传机构发票
   manageAreaAgent: () => import('@/views/manageAreaAgent/manageAreaAgent'), //区域机构管理
 
-  // 机构管理      mechanism
-  agentCheck: () => import('@/views/agentCheck/agentCheck'), //机构审核
-  agentDetails: () => import('@/views/agentDetails/agentDetails'), //机构列表
+  // **机构管理      mechanism
+  agentCheck: () => import('@/views/agentCheck/agentCheck'), //**机构审核
+  agentDetails: () => import('@/views/agentDetails/agentDetails'), //**机构列表
+
+
   subordinateAgent: () => import('@/views/subordinateAgent/subordinateAgent'), // 机构下属查询
   travelerCheck: () => import('@/views/travelerCheck/travelerCheck'), // 角落向导审核
 
-  // 财务管理       finance
+  // **财务管理       finance
   virtualProfit: () => import('@/views/virtualProfit/virtualProfit'), //贝壳收益
-  accountProfit: () => import('@/views/accountProfit/accountProfit'), // 其他收益
+  accountProfit: () => import('@/views/accountProfit/accountProfit'), // 出行收益
+  memberFee: () => import('@/views/memberFee/memberFee'),//会员费收益
+  recharge: () => import('@/views/recharge/recharge'),//充值收益
+  proceedsCash: () => import('@/views/proceedsCash/proceedsCash'),//收益提现
+
   agentAccountExamine: () => import('@/views/agentAccountExamine/agentAccountExamine'), //机构受益划拨审核
   agentAccountRecord: () => import('@/views/agentAccountRecord/agentAccountRecord'), //机构受益划拨记录
   withdraw: () => import('@/views/withdraw/withdraw'), //向导提现
@@ -134,20 +189,29 @@ const fya_routerMap = {
   rechargeCheckList: () => import('@/views/rechargeCheckList/rechargeCheckList'), //机构充值审核
   rechargeRecordList: () => import('@/views/rechargeRecordList/rechargeRecordList'), //机构充值记录
 
+  // **运营管理  operate
+
+  atmosphere: () => import('@/views/atmosphere/atmosphere'), // 氛围号管理
+  identityInfoManage: () => import('@/views/identityInfoManage/identityInfoManage'),// 认证管理
+  customPhotoCheck: () => import('@/views/customPhotoCheck/customPhotoCheck'),// 照片审核
+  activitys: () => import('@/views/activitys/activitys'), // 活动管理
+
   // 向导管理       guide
   travelerInfo: () => import('@/views/travelerInfo/travelerInfo'), //向导查询,
-  travelRecord: () => import('@/views/travelRecord/travelRecord'), // 工作记录
+
   travelOrder: () => import('@/views/travelOrder/travelOrder'), // 出行记录
   videoExamine: () => import('@/views/videoExamine/videoExamine'), // 录制视频审核
   videoChoice: () => import('@/views/videoChoice/videoChoice'), // 工作间视频设置
   customerService: () => import('@/views/customerService/customerService'), //客服管理
-  InvitationOnlineRecord: () => import('@/views/InvitationOnlineRecord/InvitationOnlineRecord'), //邀约上线记录
-  // 客户管理     customer
+
+  // **用户管理     customer
   customInfo: () => import('@/views/customInfo/customInfo'), //用户查询
   consumeOrderUnion: () => import('@/views/consumeOrderUnion/consumeOrderUnion'), //消费记录
   customOrder: () => import('@/views/customOrder/customOrder'), //出行记录
+  travelRecord: () => import('@/views/travelRecord/travelRecord'), // 直播记录
   virtualConsumeRecord: () => import('@/views/virtualConsumeRecord/virtualConsumeRecord'), //贝壳消费记录
   chatInfoRecord: () => import('@/views/chatInfoRecord/chatInfoRecord'), // 即时聊天记录
+  InvitationOnlineRecord: () => import('@/views/InvitationOnlineRecord/InvitationOnlineRecord'), //邀约上线记录
   // 系统设置     system
   sysRole: () => import('@/views/sysRole/sysRole'), // 角色管理
   sysUser: () => import('@/views/sysUser/sysUser'), // 用户管理
@@ -186,12 +250,14 @@ const actions = {
     return new Promise(resolve => {
 
       const fya_list = setServeMap(list)
-      const gp_list = modifyKeys(fya_list)
+      // console.log(fya_list)
+      // debugger
+      // const gp_list = modifyKeys(fya_list)
       // console.dir(gp_list)
       // debugger
 
       // 测试 后台 传来的 路由表
-      const asyncRouterMap = generateAsyncRouter(fya_routerMap, gp_list)
+      const asyncRouterMap = generateAsyncRouter(fya_routerMap, fya_list)
       asyncRouterMap.push({
         path: '*',
         redirect: '/404',

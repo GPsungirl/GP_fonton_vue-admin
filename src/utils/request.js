@@ -26,7 +26,7 @@ service.interceptors.request.use(
     // please modify it according to the actual situation
     // config.headers['X-Token'] = getToken()
     // config.headers.Authorization = getToken() 123 456
-    config.headers['Authorization'] = getToken()
+    config.headers['session_token'] = getToken()
     // }
     return config
   },
@@ -43,27 +43,54 @@ service.interceptors.response.use(
 
 
     if (response.data.code === '0000') {
+      // 目前只有登录接口返回了token，其他接口暂未提供。过期问题交给后台处理。
+      if(response.data.data.token){
+        const authorization = response.data.data.token;  //令牌 response.headers.session_token
+        store.commit('user/SET_TOKEN', authorization) //请求用户信息
+        setToken(authorization) // 存到cookie里面
+      }
 
-      const authorization = response.headers.authorization;  //令牌
-      store.commit('user/SET_TOKEN', authorization) //请求用户信息
-      setToken(authorization) // 存到cookie里面
       return response
-    } else if (response.data.code == 2000 ) {
+    } else if (response.data.code == '1001' ) {
+      Message.MessageBox.alert('登录超时请重新登录', '确定登出', {
+        confirmButtonText: '重新登录',
+        center:true,
+        type: 'warning'
+      })
+      .then(() => {
+        localStorage.removeItem('pp_userId')
+        localStorage.removeItem('pp_roleId')
+        localStorage.removeItem('pp_real_name')
+        localStorage.removeItem('pp_merchant_center_code')
+        store.commit('user/SET_TOKEN', '')
+        store.commit('user/SET_ROLES', [])
+        store.commit('user/SET_USERID', '')
+        store.commit('user/SET_AVATAR', '')
+        store.commit('user/SET_NAME', '')
+        store.commit('user/SET_MERCHANT_CENTER_CODE','')
+        // Message.error('token过期')
+        removeToken()
+        resetRouter()
+        router.push(`/login`)
+        location.reload()
+      })
       // alert(111)
-      console.error(response)
-      console.error('token过期')
-      localStorage.removeItem('pp_userId')
-      localStorage.removeItem('pp_merchant_center_code')
-      store.commit('user/SET_TOKEN', '')
-      store.commit('user/SET_ROLES', [])
-      store.commit('user/SET_USERID', '')
-      store.commit('user/SET_AVATAR', '')
-      store.commit('user/SET_NAME', '')
-      store.commit('suer/SET_MERCHANT_CENTER_CODE','')
-      Message.error('token过期')
-      removeToken()
-      resetRouter()
-      router.push(`/login`)
+      // console.error(response)
+      // console.error('token过期')
+      // localStorage.removeItem('pp_userId')
+      // localStorage.removeItem('pp_merchant_center_code')
+      // store.commit('user/SET_TOKEN', '')
+      // store.commit('user/SET_ROLES', [])
+      // store.commit('user/SET_USERID', '')
+      // store.commit('user/SET_AVATAR', '')
+      // store.commit('user/SET_NAME', '')
+      // store.commit('suer/SET_MERCHANT_CENTER_CODE','')
+      // Message.error('token过期')
+
+      // location.reload()
+      // removeToken()
+      // resetRouter()
+      // router.push(`/login`)
     } else {
 
       return response;
@@ -83,7 +110,7 @@ service.interceptors.response.use(
   },
   error => {
     // console.log('err' + error)
-    // console.log(error.response)
+    console.log(err);
     //目前的token过期 以接口错误的时候 抛出来了，这里拦截
     if(error.response.data.code == 2000){
 
@@ -105,7 +132,7 @@ service.interceptors.response.use(
         removeToken()
         resetRouter()
         router.push(`/login`)
-        //location.reload()
+        location.reload()
       })
     }
     return Promise.reject(error)

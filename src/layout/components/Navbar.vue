@@ -114,7 +114,10 @@ export default {
 
     // 重置查询条件
     resetData(formName){
+      if(this.$refs[formName]){
         this.$refs[formName].resetFields();
+      }
+
     },
     // 保存密码修改
     save_modi(){
@@ -128,12 +131,13 @@ export default {
               signInUserId: this.$store.getters.userId,
               signInRoleId: this.$store.getters.roleId,
               // 私参
-              oldPassword:this.$md5(this.modi_form.oldPassword),
-              newPassword:this.$md5(this.modi_form.newPassword),
+              oldPwd: this.modi_form.oldPassword,//this.$md5(this.modi_form.oldPassword),
+              newPwd: this.modi_form.newPassword,//this.$md5(this.modi_form.newPassword),
             }
           }
           this.modi_loading = true
-          this.$http.post(`${ commonUrl.baseUrl }/sysUser/updatePassword`, param).then(res=>{
+          this.$http.post(`${ commonUrl.baseUrl }/manage/user/setPwd`, param.data).then(res=>{
+            console.log(res)
             if(res.data.code == '0000'){
               this.modi_loading = false
               this.m_message(res.data.msg, 'success')

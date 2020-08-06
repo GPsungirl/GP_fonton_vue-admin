@@ -38,20 +38,22 @@ router.beforeEach(async(to, from, next) => {
           // note: roles must be a object array! such as: ['admin'] or ,['developer','editor']
           // 携带令牌 + userId 获取用户权限
           
-          let uId = store.getters.userId;                              
+          // let uId = store.getters.userId;                              
           const _id = {
-            data: { //更改：signInUserId
-              // userId: uId
-              signInUserId:uId
+            data: {               
+              // signInUserId:uId
             }
           }
-          const res = await myhttp.post(`${commonUrl.baseUrl}/web/index`, _id)    // ${commonUrl.baseUrl}
+          const res = await myhttp.post(`${commonUrl.baseUrl}/manage/user/userAuthority`, _id)    // ${commonUrl.baseUrl}
           if(res.data.code == '0000'){
+            console.log(res)
             
             store.commit('user/SET_ROLES', ['admin']) // 早期先写固定值，让后端写下，roles: ['admin']
             store.commit('user/SET_NAME', 'editor')           
             store.commit('user/SET_AVATAR', 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif')
-            const accessRoutes = await store.dispatch('permission/generateRoutes', res.data.data.menuList) // 为什么是数组呢？只有数组才能实现递归
+            const accessRoutes = await store.dispatch('permission/generateRoutes', res.data.data.authority) // 为什么是数组呢？只有数组才能实现递归
+            // console.log(accessRoutes)
+            // debugger
             router.addRoutes(accessRoutes)
             next({
               ...to,
