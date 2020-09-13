@@ -3,7 +3,7 @@
     <el-form ref="loginForm" :model="loginForm" :rules="loginFormRules" class="login-form valid_form" auto-complete="on" label-position="left">
 
       <div class="title-container">
-        <h3 class="title">暂定管理平台</h3>
+        <h3 class="title">社区购管理系统</h3>
       </div>
 
       <el-form-item prop="username">
@@ -57,8 +57,8 @@ export default {
   data() {
     return {
       loginForm: {
-        username: '',
-        password: ''
+        username: 'admin',
+        password: '123456'
       },
       loginFormRules:{
         username:[

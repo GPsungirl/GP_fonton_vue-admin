@@ -110,7 +110,7 @@ service.interceptors.response.use(
   },
   error => {
     // console.log('err' + error)
-    console.log(err);
+    console.log(error);
     //目前的token过期 以接口错误的时候 抛出来了，这里拦截
     if(error.response.data.code == 2000){
 

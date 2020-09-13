@@ -21,11 +21,11 @@ function setServeMap(routerMap) {
   console.log(routerMap)
   //深克隆
   let cloneData = JSON.parse(JSON.stringify(routerMap))
-  return cloneData.map(val=>{
+  return cloneData.map(val => {
     return modifyMenu(val)
   })
 
-  
+
   // 父级id ===  子级 pid
   // return cloneData.filter(father => {
 
@@ -38,13 +38,15 @@ function setServeMap(routerMap) {
 }
 
 // 递归处理菜单
-function modifyMenu(data){
+function modifyMenu(data) {
   // 一级菜单特有属性
-  if(data.pid == 0){
-    data['component']  = 'Layout';
+  if (data.pid == 0) {
+    data['component'] = 'Layout';
     data['alwaysShow'] = true;
-  }else{ //其他子级需要 component为path对应的值
-    data['component'] = data.path.startsWith('/')?data.path.slice(1):data.path;
+  } else { //其他子级需要 component为path对应的值
+    data['component'] = data.path.startsWith('/') ? data.path.slice(1) : data.path;
+    // data['component'] = 'gp' +data['component']
+    // console.log(data['component'])
   }
   //data['path'] = data.authority.startsWith('/')?data.authority:'/'+data.authority;
   data['name'] = data.functionname;
@@ -52,14 +54,15 @@ function modifyMenu(data){
     title: data.functionname,
     icon: data.path.slice(1)
   }
-  if(data.subAuthority && data.pid == 0){
+  if (data.subAuthority && data.pid == 0) {
     data['children'] = [];
-    data.subAuthority.map(item=>{
+    data.subAuthority.map(item => {
       data['children'].push(modifyMenu(item))
     })
   }
+
   return data;
-  
+
 }
 // 修正数据
 function modifyKeys(data) {
@@ -72,10 +75,10 @@ function modifyKeys(data) {
 
       // alwaysShow: true
       let _index = item.path.indexOf('/');
-      if( _index > -1){
-        var _icon_name = item.path.slice(_index+1);
+      if (_index > -1) {
+        var _icon_name = item.path.slice(_index + 1);
       }
-      item['component']  = 'Layout';  // 一级菜单强行加 Layout
+      item['component'] = 'Layout'; // 一级菜单强行加 Layout
       item['alwaysShow'] = true;
       // meta
       item['meta'] = {
@@ -91,7 +94,7 @@ function modifyKeys(data) {
             title: item.children[i].menu_name
           }
           // component  name
-          item.children[i]['name']  = item.children[i].path;
+          item.children[i]['name'] = item.children[i].path;
           item.children[i]['component'] = item.children[i].path;
         }
       }
@@ -141,7 +144,9 @@ const fya_routerMap = {
   roleLIst: () => import('@/views/roleLIst/roleLIst'), //权限组管理
   userList: () => import('@/views/userList/userList'), //操作员管理
 
-  // **  
+  // 2**商品管理/diliver"  
+  searchGoods: () => import('@/views/searchGoods/searchGoods'), //商品查询
+  createGoods: () => import('@/views/createGoods/createGoods'), //商品创建
 
 
 
@@ -150,8 +155,7 @@ const fya_routerMap = {
 
 
 
-
-// =================================================================================================================
+  // =================================================================================================================
 
 
 
@@ -160,7 +164,7 @@ const fya_routerMap = {
   merchantAgent: () => import('@/views/merchantAgent/merchantAgent'), //招商中心机构管理
   merchantUser: () => import('@/views/merchantUser/merchantUser'), // 招商中心人员管理
   merchantCenterCheck: () => import('@/views/merchantCenterCheck/merchantCenterCheck'), //招商中心审核
-  allMerchantCenter:  () => import('@/views/allMerchantCenter/allMerchantCenter'), //招商中心详情
+  allMerchantCenter: () => import('@/views/allMerchantCenter/allMerchantCenter'), //招商中心详情
 
   // 区域业务管理   region
   manageArea: () => import('@/views/manageArea/manageArea'), //业务人员管理
@@ -178,9 +182,9 @@ const fya_routerMap = {
   // **财务管理       finance
   virtualProfit: () => import('@/views/virtualProfit/virtualProfit'), //贝壳收益
   accountProfit: () => import('@/views/accountProfit/accountProfit'), // 出行收益
-  memberFee: () => import('@/views/memberFee/memberFee'),//会员费收益
-  recharge: () => import('@/views/recharge/recharge'),//充值收益
-  proceedsCash: () => import('@/views/proceedsCash/proceedsCash'),//收益提现
+  memberFee: () => import('@/views/memberFee/memberFee'), //会员费收益
+  recharge: () => import('@/views/recharge/recharge'), //充值收益
+  proceedsCash: () => import('@/views/proceedsCash/proceedsCash'), //收益提现
 
   agentAccountExamine: () => import('@/views/agentAccountExamine/agentAccountExamine'), //机构受益划拨审核
   agentAccountRecord: () => import('@/views/agentAccountRecord/agentAccountRecord'), //机构受益划拨记录
@@ -192,8 +196,8 @@ const fya_routerMap = {
   // **运营管理  operate
 
   atmosphere: () => import('@/views/atmosphere/atmosphere'), // 氛围号管理
-  identityInfoManage: () => import('@/views/identityInfoManage/identityInfoManage'),// 认证管理
-  customPhotoCheck: () => import('@/views/customPhotoCheck/customPhotoCheck'),// 照片审核
+  identityInfoManage: () => import('@/views/identityInfoManage/identityInfoManage'), // 认证管理
+  customPhotoCheck: () => import('@/views/customPhotoCheck/customPhotoCheck'), // 照片审核
   activitys: () => import('@/views/activitys/activitys'), // 活动管理
 
   // 向导管理       guide
@@ -216,10 +220,10 @@ const fya_routerMap = {
   sysRole: () => import('@/views/sysRole/sysRole'), // 角色管理
   sysUser: () => import('@/views/sysUser/sysUser'), // 用户管理
   refusedCause: () => import('@/views/refusedCause/refusedCause'), //审核原因
-  messageInfo: () => import('@/views/messageInfo/messageInfo'),  //消息提示
+  messageInfo: () => import('@/views/messageInfo/messageInfo'), //消息提示
 
   // 推送管理    push
-  IMpush: () => import('@/views/IMpush/IMpush')  //信息推送
+  IMpush: () => import('@/views/IMpush/IMpush') //信息推送
 }
 
 function generateAsyncRouter(routerMap, serverRouterMap) {
@@ -250,6 +254,7 @@ const actions = {
     return new Promise(resolve => {
 
       const fya_list = setServeMap(list)
+      
       // console.log(fya_list)
       // debugger
       // const gp_list = modifyKeys(fya_list)

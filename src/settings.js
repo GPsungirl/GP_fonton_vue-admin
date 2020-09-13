@@ -1,6 +1,6 @@
 module.exports = {
 
-  title: '暂定管理平台',
+  title: '社区购管理系统',
 
   /**
    * @type {boolean} true | false

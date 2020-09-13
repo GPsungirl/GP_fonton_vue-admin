@@ -395,7 +395,7 @@
 import provinces from '../../utils/area.js'
 import commonUrl from '../../utils/common'
 import {isvalidPhone} from '../../utils/validate'
-import 'dplayer/dist/DPlayer.min.css'
+// import 'dplayer/dist/DPlayer.min.css'
 import flv from 'flv.js'
 import DPlayer from 'dplayer';
 import { setTimeout } from 'timers';

@@ -469,7 +469,7 @@ import {
   filterSpace
 } from "../../utils/validate";
 import { isvalidPhone } from "../../utils/validate";
-import "dplayer/dist/DPlayer.min.css";
+// import "dplayer/dist/DPlayer.min.css";
 import flv from "flv.js";
 import DPlayer from "dplayer";
 import { setTimeout } from "timers";
