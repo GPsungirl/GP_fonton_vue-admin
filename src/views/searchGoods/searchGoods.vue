@@ -4,61 +4,54 @@
       <!-- M1 查询区域 -->
       <div class="query_fields pad_b_no handle_timerange">
         <el-form :inline="true" :model="queryForm" ref="queryForm" size="mini" class="demo-form-inline">
-          <!-- 所属机构 -->
-          <el-form-item label="所属机构" prop="agentName" label-width="68px">
-              <el-input v-model="queryForm.agentName" placeholder="所属机构" class="wid_140"></el-input>
+          <!-- 商品名称 -->
+          <el-form-item label="商品名称" prop="goodsName" label-width="68px">
+              <el-input v-model="queryForm.goodsName" placeholder="商品名称" class="wid_140"></el-input>
           </el-form-item>
-          <!-- 用户ID customid-->
-          <el-form-item label="用户ID" prop="customid" label-width="88px">
-              <el-input v-model="queryForm.customid" placeholder="用户ID" class="wid_140"></el-input>
-          </el-form-item>
-          <!-- 出行时间 -->
-          <el-form-item label="订单时间" prop="allTime">
-              <el-date-picker
-                  v-model="queryForm.allTime"
-                  type="daterange"
-                  value-format="yyyy-MM-dd"
-                  range-separator="至"
-                  start-placeholder="订单开始时间"
-                  end-placeholder="订单结束时间">
-              </el-date-picker>
-          </el-form-item>
+          
           <!-- 查询 -->
           <el-form-item>
               <el-button type="primary" size='mini' @click="queryData">查询</el-button>
               <el-button type="success" size='mini' @click="resetData('queryForm')">重置</el-button>
               <el-button type="primary" size='mini' @click="handle_refresh">刷新</el-button>
-              <el-button type="primary" size='mini' @click="exportData('queryForm')">导出数据</el-button>
-              <el-button type="primary" size='mini' @click="handleAddGoods">新增商品</el-button>
+              
           </el-form-item>
         </el-form>
       </div>
       <!-- M2 主列表 -->
       <div>
           <!-- 表格 -->
-          <el-table :data="tableData" v-loading="tableLoading" border stripe style="width: 100%">
-            <el-table-column prop="money" label="充值金额" width="80px"></el-table-column>
-            <el-table-column prop="customid" label="用户ID" width="70px"></el-table-column>
-            <el-table-column prop="nickname" label="昵称" width="70px"></el-table-column>
-            <el-table-column prop="" label="所属机构" :show-overflow-tooltip="true" width="">
+          <el-table :data="tableData" v-loading="tableLoading"  stripe style="width: 100%">
+            <el-table-column prop="goods_name" label="商品名称" width="300"></el-table-column>
+            <el-table-column prop="stock" label="商品库存" width=""></el-table-column>
+
+            
+            <el-table-column prop="" label="商品价格"  width="">
                <template slot-scope="scope">
-                  <el-button @click="handle_agent_name(scope.row)" type="text" size="small">{{ scope.row.agentName }}</el-button>
+                  {{scope.row.price /100}}
                 </template>
             </el-table-column>
-            <el-table-column prop="" label="推荐人"  width="80">
-              <template slot-scope="scope">
-                <el-button type="text" size="small" @click="handle_detail(scope.row,'up_customid')">{{  scope.row.up_custom_name }}</el-button>
-              </template>
+            <el-table-column prop="" label="商品原价"  width="">
+               <template slot-scope="scope">
+                  {{scope.row.src_price /100}}
+                </template>
             </el-table-column>
-            <el-table-column prop="" label="上级推荐人"  width="">
-              <template slot-scope="scope">
-                <el-button type="text" size="small" @click="handle_detail(scope.row,'grand_customid')">{{  scope.row.grand_customname }}</el-button>
-              </template>
+            <el-table-column prop="goods_desc" label="商品描述" width=""></el-table-column>
+             <el-table-column prop="" label="商品规格"  width="">
+               <template slot-scope="scope">
+                  <span v-if="scope.row.unit == 1">kg</span>
+                  <span v-if="scope.row.unit == 2">个</span>
+                  <span v-if="scope.row.unit == 3">盒</span>
+                  <span v-if="scope.row.unit == 4">袋</span>
+                </template>
             </el-table-column>
-            <el-table-column prop="cityAmount" label="机构分成"  width=""></el-table-column>
-            <el-table-column prop="upAmount" label="推荐人分成"  width=""></el-table-column>
-            <el-table-column prop="grandAmount" label="上级推荐人分成"  width=""></el-table-column>
-            <el-table-column prop="orderTime" show-overflow-tooltip label="订单时间" width=""></el-table-column>
+            
+            <el-table-column prop="create_time" show-overflow-tooltip label="创建时间" width=""></el-table-column>
+            <el-table-column prop="" label="操作" width="">
+                    <template slot-scope="scope">
+                        <el-button @click="handle_detail(scope.row)" type="text" size="small">查看详情</el-button>
+                    </template>
+                </el-table-column>
           </el-table>
           <!-- 分页 -->
           <div class="block mar_t10">
@@ -74,9 +67,9 @@
       </div>
       <!-- M3 dialog 详情 -->
       <el-dialog
-        title="新增商品"
+        title="商品详情"
         :visible.sync="dialogCreate"
-        width="42%"
+        width="60%"
         class="addUsers_dialog"
         center
         v-loading="add_loading"
@@ -89,69 +82,44 @@
             <el-form
               :inline="true"
               :model="detailForm"
-              label-width="80px"
+              tip="0px"
+              label-width="100px"
               class="demo-form-inline valid_form"
             >
-              <el-form-item label="用户ID">
-                <el-input v-model="detailForm.customid" :disabled="true" class="wid_140" placeholder></el-input>
+              <el-form-item label="商品名称">
+                <el-input v-model="detailForm.goods_name" :disabled="true" class="wid_140" placeholder></el-input>
               </el-form-item>
-              <el-form-item label="昵称">
-                <el-input v-model="detailForm.nickname" :disabled="true" class="wid_140" placeholder></el-input>
+              <el-form-item label="商品权重">
+                <el-input v-model="detailForm.goods_order" :disabled="true" class="wid_140" placeholder></el-input>
               </el-form-item>
-              <el-form-item label="年龄">
-                <el-input v-model="detailForm.age" :disabled="true" class="wid_140" placeholder></el-input>
+              <el-form-item label="商品LOGO">
+                <img :src="detailForm.goods_img" alt="">
               </el-form-item>
-              <el-form-item label="性别" class="wid_parent">
-                <template>
-                  <el-radio disabled v-model="detailForm.sex" label="男">男</el-radio>
-                  <el-radio disabled v-model="detailForm.sex" label="女">女</el-radio>
-                </template>
+              <el-form-item label="商品原产地">
+                <el-input v-model="detailForm.made_place" :disabled="true" class="wid_140" placeholder></el-input>
               </el-form-item>
-              <el-form-item label="微信号">
-                <el-input v-model="detailForm.wechat" :disabled="true" class="wid_140" placeholder></el-input>
+              <el-form-item label="商品价格" class="wid_parent">
+                <el-input v-model="detailForm.price" :disabled="true" class="wid_140" placeholder></el-input>
               </el-form-item>
-              <el-form-item label="地址" class="wid_parent">
-                <el-input v-model="detailForm.addr" :disabled="true" class="wid_140" placeholder></el-input>
+              <el-form-item label="商品库存">
+                <el-input v-model="detailForm.stock" :disabled="true" class="wid_140" placeholder></el-input>
               </el-form-item>
-              <el-form-item label="身高">
-                <el-input v-model="detailForm.tall" :disabled="true" class="wid_140" placeholder></el-input>
+              <el-form-item label="商品原价">
+                <el-input v-model="detailForm.src_price" :disabled="true" class="wid_140" placeholder></el-input>
               </el-form-item>
-              <el-form-item label="体重">
-                <el-input v-model="detailForm.weight" :disabled="true" class="wid_140" placeholder></el-input>
+              <el-form-item label="商品供应商">
+                <el-input v-model="detailForm.supplier" :disabled="true" class="wid_140" placeholder></el-input>
               </el-form-item>
-              <!-- <el-form-item label="电话">
-                <el-input v-model="detailForm.phone" :disabled="true" class="wid_140" placeholder></el-input>
+              <el-form-item label="商品banner">
+                <img :src="detailForm.goods_img" alt="">
               </el-form-item>
-              <el-form-item label="会员状态">
-                <el-input
-                  v-model="detailForm.member_status"
-                  :disabled="true"
-                  class="wid_140"
-                  placeholder
-                ></el-input>
+              <el-form-item label="商品总销量">
+                <el-input v-model="detailForm.total_count" :disabled="true" class="wid_140" placeholder></el-input>
               </el-form-item>
-              <el-form-item label="邮箱">
-                <el-input v-model="detailForm.email" :disabled="true" class="wid_140" placeholder></el-input>
+              <el-form-item label="商品规格">
+                <el-input v-model="detailForm.typeid" :disabled="true" class="wid_140" placeholder></el-input>
               </el-form-item>
-              <el-form-item label="客户ID">
-                <el-input v-model="detailForm.customid" :disabled="true" class="wid_140" placeholder></el-input>
-              </el-form-item> -->
-              <el-form-item label="职业">
-                <el-input
-                  v-model="detailForm.custom_type"
-                  :disabled="true"
-                  class="wid_140"
-                  placeholder
-                ></el-input>
-              </el-form-item>
-              <!-- <el-form-item label="用户状态">
-                <el-input
-                  v-model="detailForm.custom_status"
-                  :disabled="true"
-                  class="wid_140"
-                  placeholder
-                ></el-input>
-              </el-form-item> -->
+            
             </el-form>
           </div>
         </div>
@@ -300,7 +268,6 @@ export default {
     name: 'searchGoods',
     data(){
       return {
-       
         // 主列表
         tableLoading:false,
         tableData:[],
@@ -309,57 +276,23 @@ export default {
         currentPage:1,
         // 查询参数
         queryForm: {
-            account_classs:[
-                {
-                    id:1,
-                    value:'出行'
-                }
-            ],
-            // 收益类型
-            account_class:'',
-            // 所属市级机构
-            agentName:'',
-            // 用户ID
-            customid:'',
-            // 向导id
-            customid:'',
-            // 向导姓名
-            custom_name:'',
-            // 上级id
-            up_customid:'',
-            // 上级姓名
-            up_custom_name:'',
-            // 所有时间
-            allTime:'',
-            // 结束时间
-            endTime:'',
-            // 开始时间
-            startTime:'',
+          goodsName:'',
         },
         // 新增 弹框规则 修改也用该弹框
         dialogCreate: false,
         add_loading: false,
         detailForm: {
-          // 标题
-          detailForm_title: "",
-          customid: "",
-          nickname: "",
-          age:'',
-          sex: "",
-          phone: "",
-          wechat:'',
-          province:'',
-          city:'',
-          addr:'',
-          tall:'',
-          weight:'',
-          custom_type: "", // 客户类别  0普通客户 1兼职向导人员 2全职向导人员 3咨询人员 4校园代
-          member_status: "",
-          email: "",
-          custom_status: "", //用户状态  1可用 2不可用
-          apple_pay: "", //是否可以进行苹果支付 1支持 2不支持
-          app_openid: "", //第三方登录标识 微信Openid 陌陌
-          app_logintype: "", //app登录类别 0手机号 1微信 2陌陌 3邮箱
+            goods_desc:'',
+            goods_img:'',
+            goods_name:'',
+            goods_order:'',
+            made_place:'',
+            price:'',
+            src_price:'',
+            stock:'',
+            supplier:'',
+            total_count:'',
+            typeid:''
         },
         // 所属机构的详情
         agent_detail_dialogVisible:false,
@@ -401,19 +334,17 @@ export default {
             account_province_code:'',
             account_city_code:'',
         },
+        goodsTypes:[],
       }
+      
     },
     created(){      
       // 初始化主列表
-      // this.getTabelDataList(1);
+      this.getTabelDataList(1);
+      this.getGoodsCatogory()
     },
     methods:{
-      // 新增商品
-      handleAddGoods(){
-        this.dialogCreate = true
-        // 初始化商品数据
-        this.initGoods()
-      },
+      
       // 提交
       submitCreateGoods(){
 
@@ -422,145 +353,91 @@ export default {
       initGoods(){
 
       },  
+      // 获取商品分类
+      async getGoodsCatogory(){
+          let param = {}
+          this.$http.post(`${commonUrl.baseUrl}/manage/goods/getGoodsType`,param).then(res=>{
+            this.goodsTypes = res.data.data.goodsType
+          
+          }).catch(err=>{})
+      },
       // 初始化主列表
       getTabelDataList(pageNum){
         // 参数
         let param = {
-          data: {
-            // 公有
-            signInUserId: this.$store.getters.userId,
-            signInRoleId: this.$store.getters.roleId,
-            pageNum: pageNum,
-            pageSize: 10,
-            // 所属机构
-            agentName:this.queryForm.agentName,
-            // 用户ID
-            customid:this.queryForm.customid,
-            // 出行开始时间
-            startTime:this.queryForm.startTime,
-            // 出行结束时间
-            endTime:this.queryForm.endTime,
-          }
+          goodsName:this.queryForm.goodsName,
+          page_num: pageNum,
+          page_count: 10,
         }
         this.tableLoading = true
-        this.$http.post(`${ commonUrl.baseUrl }/accountProfit/getRechargeProfit`, param).then(res=>{
-            // console.log(res)
-            // debugger
-            if(res.data.code == '0000'){
+        this.$http.post(`${ commonUrl.baseUrl }/manage/goods/searchGoodsInfo`, param).then(res=>{
+           console.log(res)
+          if(res.data.code == '0000'){
 
-                this.tableData =  res.data.data.customInfoList
-                // 分页 总数
-                this.pageTotal = res.data.data.page.pageTotal;
-                // 关闭加载
-                this.tableLoading = false
-            }
+              this.tableData =  res.data.data.goodsList
+              // 分页 总数
+              this.pageTotal = res.data.page.page_total;
+              // 关闭加载
+              this.tableLoading = false
+          }
         }).catch(err=>{})
       },
-      // 导出数据
-      exportData(){
-          let param = {
-              data:{
-                  // 公有
-                  signInUserId: this.$store.getters.userId,
-                  signInRoleId: this.$store.getters.roleId,
-                  // 私有
-                  // 收益类型
-                  account_class:this.queryForm.account_class,
-                  // 所属市级机构
-                  agentName:this.queryForm.agentName,
-                  // 向导ID
-                  customid:this.queryForm.customid,
-                  // 出行项目
-                  travel_projects:this.queryForm.travel_projects,
-                  // 出行开始时间
-                  startTime:this.queryForm.startTime,
-                  // 出行结束时间
-                  endTime:this.queryForm.endTime,
-              }
-          }
-          // 其他收益的数据导出
-          window.location.href = `${commonUrl.baseUrl}/accountProfit/exportRechargeProfit?signInUserId=${param.data.signInUserId}&signInRoleId=${param.data.signInRoleId}&customid=${param.data.customid}&account_class=${param.data.account_class}&agentName=${param.data.agentName}&startTime=${param.data.startTime}&endTime=${param.data.endTime}`
-          // this.$http.post(`${ commonUrl.baseUrl}/accountProfit/exportAccountProfit`, param).then(res=>{
-          //     if(res.data.code == '0000'){
-          //         this.m_message(res.data.msg, 'success')
-          //     }
-          // }).catch(err=>{})
-      },
-      // 详情操作 @params:row:当前行数据；type:当前查询的id：eg:推荐人；推荐人上级，本人
-      handle_detail(row,type) {
+      
+      // 详情操作 
+      handle_detail(row) {
         // 参数
         let param = {
-          data: {
-            // 公有
-            signInUserId: this.$store.getters.userId,
-            signInRole: this.$store.getters.roleId,
-            // 私有 当前id
-            customid: row.customid
-          }
+          goodsid:row.goodsid
         };
-        // 修正参数
-        switch(type){
-          case 'up_customid':
-            this.detailForm.detailForm_title = row.up_customname;
-            param.data.customid = row.up_customid;
-            break;
-          case 'grand_customid':
-            this.detailForm.detailForm_title = row.grand_customname;
-            param.data.customid = row.grand_customid;
-            break;
-          default :
-            this.detailForm.detailForm_title = row.nickname;
-            param.data.customid = row.customid;
-            break;
-        }
-
+        let that = this
         // 开弹框
         this.dialogCreate = true;
         // 加载中
         this.add_loading = true;
         this.$http
-          .post(`${commonUrl.baseUrl}/customInfo/findCustomInfoDetails`, param)
+          .post(`${commonUrl.baseUrl}/manage/goods/getGoodsDetail`, param)
           .then(res => {
             if (res.data.code == "0000") {
               // 数据赋值
-              let result = res.data.data.customInfo;
-              this.detailForm.customid = result.customid;
-              this.detailForm.nickname = result.nickname;
-              this.detailForm.age = result.age;
-              this.detailForm.sex = result.sex == 1 ? "男" : "女";
-              this.detailForm.wechat = result.wechat;
-
-              this.detailForm.addr = result.province+result.city;
-              this.detailForm.tall = result.tall;
-              this.detailForm.weight = result.weight;
-
-              // 1普通会员 2超级会员
-              // this.detailForm.member_status =
-              //   result.member_status == 1 ? "普通会员" : "超级会员";
-              // this.detailForm.email = result.email;
-              // this.detailForm.phone = result.phone;
-              // 客户类别
-              // 0普通客户 1兼职向导人员 2全职向导人员 3咨询人员 4校园代理
-              switch (result.custom_type) {
-                case 0:
-                  this.detailForm.custom_type = "普通客户";
-                  break;
-                case 1:
-                  this.detailForm.custom_type = "兼职向导";
-                  break;
-                case 2:
-                  this.detailForm.custom_type = "全职向导";
-                  break;
-                case 3:
-                  this.detailForm.custom_type = "咨询人员";
-                  break;
-                case 4:
-                  this.detailForm.custom_type = "校园代理";
-                  break;
-              }
-              // this.detailForm.custom_status =
-              //   result.custom_status == 1 ? "可用" : "不可用";
-              // 加载完
+              
+              let gdata = res.data.data.goodsDetail
+              console.log('看看')
+              console.log(gdata)
+              this.detailForm.goods_name = gdata.goods_name
+              this.detailForm.goods_img = commonUrl.baseUrl+gdata.goods_img
+              this.detailForm.goods_order = gdata.goods_order
+              this.detailForm.made_place = gdata.made_place
+              this.detailForm.price = gdata.price
+              this.detailForm.src_price = gdata.src_price
+              this.detailForm.stock = gdata.stock
+              this.detailForm.supplier = gdata.supplier
+              this.detailForm.total_count = gdata.total_count
+              this.detailForm.typeid = gdata.typeid
+              this.detailForm.unit = gdata.unit
+              
+              
+              // that.detailForm.goods_desc = gdata.goods_desc
+              
+              // this.detailForm = {
+              //   goods_desc:gdata.goods_desc,
+              //   goods_img:commonUrl.baseUrl+data.goods_img,
+              //   goods_name:gdata.goods_name,
+              //   goods_order:gdata.goods_order,
+              //   made_place:gdata.made_place,
+              //   price:gdata.price,
+              //   src_price:gdata.src_price,
+              //   stock:gdata.stock,
+              //   supplier:gdata.supplier,
+              //   total_count:gdata.total_count,
+              //   typeid:gdata.typeid
+              // }
+              // this.detailForm.typeid = this.getGoodsCatogory.forEach(item=>{
+              //   if(item.typeid == gdata.typeid){
+              //     return item.type_name
+              //   }
+              // })
+              
+             
               this.add_loading = false;
             }else{
               this.add_loading = false;
@@ -632,12 +509,7 @@ export default {
       },
       // 查询按钮
       queryData(){
-          if(this.queryForm.allTime.length > 0){
-              // 修正 开始 和结束 时间
-              this.queryForm.startTime = this.queryForm.allTime[0]
-              this.queryForm.endTime = this.queryForm.allTime[1]
-          }
-
+         
           this.getTabelDataList(1);
           this.currentPage = 1
       },
@@ -669,3 +541,9 @@ export default {
     }
 }
 </script>
+<style lang="scss" scoped>
+  img{
+    width:50px;
+  }
+
+</style>
