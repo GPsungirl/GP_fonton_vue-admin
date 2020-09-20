@@ -61,12 +61,13 @@
           <el-input v-model.number="ruleForm.goods_order" placeholder="请输入商品权重"></el-input>
         </el-form-item>
         <el-form-item label="商品规格" prop="unit">
-          <el-select v-model="ruleForm.unit" placeholder="请选择商品规格">
+          <!-- <el-select v-model="ruleForm.unit" placeholder="请选择商品规格">
             <el-option label="kg" value="1"></el-option>
             <el-option label="个" value="2"></el-option>          
             <el-option label="盒" value="3"></el-option>          
             <el-option label="袋" value="4"></el-option>          
-          </el-select>
+          </el-select> -->
+          <el-input v-model="ruleForm.unit" placeholder="请输入商品规格"></el-input>
         </el-form-item>
         <el-form-item label="商品描述" prop="goods_desc">
           <el-input type="textarea" v-model="ruleForm.goods_desc"></el-input>
@@ -162,7 +163,7 @@ export default {
           { type: "number", message: "请输入商品权重" }
         ],
         unit: [
-          { required: true, message: '请选择商品规格', trigger: 'change' }
+          { required: true, message: '请输入商品规格', trigger: 'change' }
         ],
         goods_desc: [
           { required: true, message: '请填写商品描述', trigger: 'blur' }
@@ -179,12 +180,12 @@ export default {
         let param = {}
         this.$http.post(`${commonUrl.baseUrl}/manage/goods/getGoodsType`,param).then(res=>{
           this.goodsTypes = res.data.data.goodsType
-          console.log(this.goodsTypes)
+          // console.log(this.goodsTypes)
         }).catch(err=>{})
     },
     // 创建商品
     submitForm (formName) {
-      console.log(this.$refs.ruleForm)
+      // console.log(this.$refs.ruleForm)
       this.$refs[formName].validate((valid) => {
         if (valid) {
          
@@ -203,9 +204,15 @@ export default {
           }
           
           this.$http.post(`${commonUrl.baseUrl}/manage/goods/createGoods`,param).then(res=>{
+            console.log(res)
             res = res.data
-            if(res.code==='0000') return this.$message.success(res.msg)
-            this.$message.error(res.msg)
+            if(res.code==='0000'){
+              this.$message.success(res.msg)
+              this.$router.push({path:'/goods/searchGoods'})
+            } else{
+              this.$message.error(res.msg)
+            }
+            
           }).catch(err=>{
 
           })
@@ -220,7 +227,7 @@ export default {
     },
 
     handlePost (content) {
-      console.log(arguments)
+      
       var uploadData = new FormData()
       
       let file = content.file
@@ -245,7 +252,7 @@ export default {
             uid:file.uid
           })
           if(this.imgType == 1) this.ruleForm.goods_img = res.data.fileUrl
-          console.log(this.ruleForm.goods_img)
+          
           this.$message.success(res.msg)
           loading.close()
         }

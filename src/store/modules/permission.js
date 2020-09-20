@@ -43,8 +43,10 @@ function modifyMenu(data) {
   if (data.pid == 0) {
     data['component'] = 'Layout';
     data['alwaysShow'] = true;
+    
   } else { //其他子级需要 component为path对应的值
     data['component'] = data.path.startsWith('/') ? data.path.slice(1) : data.path;
+    data['path'] = data.path.slice(1)
     // data['component'] = 'gp' +data['component']
     // console.log(data['component'])
   }
@@ -55,6 +57,7 @@ function modifyMenu(data) {
     icon: data.path.slice(1)
   }
   if (data.subAuthority && data.pid == 0) {
+    data['redirect'] = data.path+data.subAuthority[0].path;
     data['children'] = [];
     data.subAuthority.map(item => {
       data['children'].push(modifyMenu(item))
@@ -148,8 +151,8 @@ const fya_routerMap = {
   searchGoods: () => import('@/views/searchGoods/searchGoods'), //商品查询
   createGoods: () => import('@/views/createGoods/createGoods'), //商品创建
 
-
-
+  // 3**订单管理 /order  
+  searchOrder: ()=>import('@/views/searchOrder/searchOrder'),
 
 
 

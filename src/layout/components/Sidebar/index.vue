@@ -40,9 +40,6 @@ export default {
       }
       return path
     },
-    mounted(){
-      console.log(this.permission_routes)
-    },
     showLogo() {
       return this.$store.state.settings.sidebarLogo
     },
@@ -52,6 +49,12 @@ export default {
     isCollapse() {
       return !this.sidebar.opened
     }
-  }
+  },
+  
+  created(){
+    alert()
+    console.log('this.permission_routes................')
+    console.log(this.permission_routes)
+  },
 }
 </script>

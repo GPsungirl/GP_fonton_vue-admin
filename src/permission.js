@@ -52,8 +52,6 @@ router.beforeEach(async(to, from, next) => {
             store.commit('user/SET_NAME', 'editor')           
             store.commit('user/SET_AVATAR', 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif')
             const accessRoutes = await store.dispatch('permission/generateRoutes', res.data.data.authority) // 为什么是数组呢？只有数组才能实现递归
-            // console.log(accessRoutes)
-            // debugger
             router.addRoutes(accessRoutes)
             next({
               ...to,

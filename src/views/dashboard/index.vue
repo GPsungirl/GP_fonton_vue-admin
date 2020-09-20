@@ -51,7 +51,7 @@
        <p style="text-align:center">
         <span>{{$store.getters.real_name}}</span>
       </p>
-      <p style="text-align:center">欢迎登录暂定管理系统</p>
+      <p style="text-align:center">欢迎登录社区团购后台管理系统</p>
 
       <p style="text-align:center">{{ invite_code }}</p>
 
