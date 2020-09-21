@@ -72,6 +72,12 @@
         <el-form-item label="商品描述" prop="goods_desc">
           <el-input type="textarea" v-model="ruleForm.goods_desc"></el-input>
         </el-form-item>
+        <el-form-item label="商品推荐" prop="recommend">
+          <el-select v-model="ruleForm.recommend" placeholder="是否推荐">
+            <el-option label="推荐" :value="1"></el-option>
+            <el-option label="不推荐" :value="0"></el-option>                      
+          </el-select>
+        </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="submitForm('ruleForm')">立即创建</el-button>
           <el-button @click="resetForm('ruleForm')">重置</el-button>
@@ -111,7 +117,7 @@ export default {
       goodsTypes:[],
       files: [],
       dialogImageUrl: '',
-      ruleForm: {
+      ruleForm: {        
         goods_name: '',
         goods_img:'',
         typeid: '',
@@ -191,7 +197,7 @@ export default {
          
           if(!this.ruleForm.goods_img)return this.$message.error('请上商品logo')
          
-          let { goods_name,goods_img,typeid,price,active_price,src_price,total_count,current_count,stock,made_place,supplier,recommend,goods_order,unit,goods_desc} = this.ruleForm
+          let { goods_name,goods_img,typeid,price,active_price,src_price,total_count,current_count,stock,made_place,supplier,recommend,goods_order,unit,goods_desc} = this.ruleForm;
           price*=100
           active_price*=100
           src_price*=100

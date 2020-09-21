@@ -52,9 +52,9 @@ export default {
   },
   
   created(){
-    alert()
-    console.log('this.permission_routes................')
-    console.log(this.permission_routes)
+    // alert()
+    // console.log('this.permission_routes................')
+    // console.log(this.permission_routes)
   },
 }
 </script>

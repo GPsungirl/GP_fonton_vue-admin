@@ -43,16 +43,18 @@
           </template>
         </el-table-column>
         <el-table-column prop="goods_desc" label="商品描述" width="" show-overflow-tooltip></el-table-column>
-        <el-table-column prop="create_time" show-overflow-tooltip label="创建时间" width=""></el-table-column>
+
         <el-table-column label="状态" width="80">
           <template slot-scope="scope">
             <span v-if="scope.row.goods_status == 0">不可用</span>
             <span v-if="scope.row.goods_status == 1">可用</span>
           </template>
         </el-table-column>
+        <el-table-column prop="create_time" show-overflow-tooltip label="创建时间" width=""></el-table-column>
         <el-table-column prop="" label="操作" width="">
           <template slot-scope="scope">
             <el-button @click="handle_detail(scope.row)" type="text" size="small">详情</el-button>
+            <el-button @click="initEdit(scope.row)" type="text" size="small">编辑</el-button>
             <el-button v-if="scope.row.goods_status == 0" @click="handle_frozen(scope.row)" type="text" size="small">可用
             </el-button>
             <el-button v-if="scope.row.goods_status == 1" @click="handle_frozen(scope.row)" type="text" size="small">不可用</el-button>
@@ -126,107 +128,49 @@
         <!-- <el-button type="info" @click="submitCreateGoods" size="mini">创 建</el-button> -->
       </span>
     </el-dialog>
-    <!-- M5 dialog所属机构-->
-    <el-dialog title="机构详情" :visible.sync="agent_detail_dialogVisible" width="50%" center :close-on-click-modal="false"
-      v-loading="agent_detail_loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading"
-      element-loading-background="rgba(0, 0, 0, 0.8)" class="agent_detail">
-      <!-- 业务信息 -->
-      <el-form :inline="true" :model="agent_detail_form" class="demo-form-inline " label-width="68px" disabled>
-        <!-- 业务信息 -->
-
-        <el-form-item label="机构名称" prop="agent_name">
-          <el-input v-model="agent_detail_form.agent_name" placeholder="审批人" class="wid_180"></el-input>
-        </el-form-item>
-        <!-- <el-form-item label="机构编号" prop="agentid">
-                  <el-input v-model="agent_detail_form.agentid" placeholder="" class="wid_180"></el-input>
-              </el-form-item> -->
-        <el-form-item label="负责人" prop="charger" label-width="68px">
-          <el-input v-model="agent_detail_form.charger" placeholder="负责人" class="wid_180"></el-input>
-        </el-form-item>
-        <!-- <el-form-item label="业务地区"  class="marg_r0">
-                  <el-col :span="11">
-                      <el-form-item prop="province_code" class="marg_b0">
-                          <el-select v-model="agent_detail_form.province_code"
-                              placeholder="选择省"
-                              class="wid_90"
-                              @change="changeOption_province_addBusiness($event)">
-                              <el-option v-for="(item, index) in agent_detail_form.regions"
-                                  :key="index"
-                                  :label=" item.province "
-                                  :value=" item.adcode ">
-                              </el-option>
-                          </el-select>
-                      </el-form-item>
-                  </el-col>
-                  <el-col :span="11">
-                      <el-form-item prop="city_code" class="marg_b0">
-                          <el-select v-model="agent_detail_form.city_code"
-                              placeholder="选择市"
-                              class="wid_90"
-                              @change="changeOption_city_addBusiness($event)">
-                              <el-option v-for="(item, index) in agent_detail_form.cities"
-                                  :key="index"
-                                  :label=" item.city "
-                                  :value=" item.adcode ">
-                              </el-option>
-                          </el-select>
-                      </el-form-item>
-                  </el-col>
-              </el-form-item> -->
-        <el-form-item label="联系地址" prop="address">
-          <el-input v-model="agent_detail_form.address" placeholder="联系地址" class="wid_180"></el-input>
-        </el-form-item>
-        <!-- <el-form-item label="贝壳分成" prop="virtual_rate">
-                  <el-input v-model="agent_detail_form.virtual_rate" placeholder="贝壳分成" class="wid_181"></el-input>%
-              </el-form-item> -->
-        <el-form-item label="联系电话" prop="phone">
-          <el-input v-model="agent_detail_form.phone" placeholder="联系电话" class="wid_180"></el-input>
-        </el-form-item>
-        <!-- <el-form-item label="出行分成" prop="account_rate">
-                  <el-input v-model="agent_detail_form.account_rate" placeholder="出行分成" class="wid_181"></el-input>%
-              </el-form-item> -->
-        <el-form-item label="联系邮箱" prop="email">
-          <el-input v-model="agent_detail_form.email" placeholder="联系邮箱" class="wid_180"></el-input>
-        </el-form-item>
-        <!-- <el-form-item label="合同编号" prop="contract_no">
-                  <el-input v-model="agent_detail_form.contract_no" placeholder="合同编号" class="wid_180"></el-input>
-              </el-form-item> -->
-        <div></div>
-        <el-form-item label="开户名" prop="account_user" label-width="68px">
-          <el-input v-model="agent_detail_form.account_user" placeholder="开户名" class="wid_180"></el-input>
-        </el-form-item>
-        <el-form-item label="开户行" prop="bank_code" label-width="68px">
-          <el-select v-model="agent_detail_form.bank_code" placeholder="开户行" class="wid_190" @change="changeOption_bank($event)">
-            <el-option v-for="(item, index) in agent_detail_form.bankInfo" :key="index" :label=" item.bankname " :value=" item.bankcode ">
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="账号" prop="account_no" label-width="68px">
-          <el-input v-model="agent_detail_form.account_no" placeholder="账号" class="wid_180"></el-input>
-        </el-form-item>
-        <el-form-item label="开户地" label-width="68px" class="marg_r0">
-          <el-col :span="11">
-            <el-form-item prop="account_province_code" class="marg_b0">
-              <el-select v-model="agent_detail_form.account_province_code" placeholder="选择省" class="wid_90"
-                @change="changeOption_province_addBank($event)">
-                <el-option v-for="(item, index) in agent_detail_form.account_regions" :key="index" :label=" item.province" :value=" item.adcode ">
-                </el-option>
-              </el-select>
+    <!-- M4 dialog 编辑 -->
+    <el-dialog title="商品编辑" :visible.sync="dialogEdit" width="60%" class="addUsers_dialog" center v-loading="edit_loading"
+      element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
+      <div class="dialogBody_addPermission">
+        <div class="grid-content bg-purple-dark pad_t2">
+          <el-form :inline="true" :model="editForm" :rules="editRules" ref="editForm" label-width="100px" class="demo-form-inline valid_form">
+            <el-form-item label="商品名称" prop="goods_name">
+              <el-input v-model="editForm.goods_name" class="wid_140" placeholder></el-input>
             </el-form-item>
-          </el-col>
-          <el-col :span="11">
-            <el-form-item prop="city_code" class="marg_b0">
-              <el-select v-model="agent_detail_form.account_city_code" placeholder="选择市" class="wid_90" @change="changeOption_city_addBank($event)">
-                <el-option v-for="(item, index) in agent_detail_form.account_cities" :key="index" :label=" item.city " :value=" item.adcode ">
-                </el-option>
-              </el-select>
+            <el-form-item label="商品权重" prop="goods_order">
+              <el-input v-model="editForm.goods_order" class="wid_140" placeholder></el-input>
             </el-form-item>
-          </el-col>
-        </el-form-item>
-      </el-form>
+            <el-form-item label="商品原产地" prop="made_place">
+              <el-input v-model="editForm.made_place" class="wid_140" placeholder></el-input>
+            </el-form-item>
+            <el-form-item label="商品价格" class="wid_parent" prop="price">
+              <el-input v-model="editForm.price" class="wid_140" placeholder></el-input>
+            </el-form-item>
+            <el-form-item label="商品库存" prop="stock">
+              <el-input v-model="editForm.stock" class="wid_140" placeholder></el-input>
+            </el-form-item>
+            <el-form-item label="商品原价" prop="src_price">
+              <el-input v-model="editForm.src_price" class="wid_140" placeholder></el-input>
+            </el-form-item>
+            <el-form-item label="商品供应商" prop="supplier">
+              <el-input v-model="editForm.supplier" class="wid_140" placeholder></el-input>
+            </el-form-item>
+            <el-form-item label="商品描述" prop="goods_desc">
+              <el-input type="textarea" v-model="editForm.goods_desc"></el-input>
+            </el-form-item>
+            <el-form-item label="商品总销量" prop="total_count">
+              <el-input v-model="editForm.total_count" class="wid_140" placeholder></el-input>
+            </el-form-item>
+            <el-form-item label="商品规格" prop="unit">
+              <el-input v-model="editForm.unit" class="wid_140" placeholder></el-input>
+            </el-form-item>
 
+          </el-form>
+        </div>
+      </div>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="agent_detail_dialogVisible = false" size="mini">关 闭</el-button>
+        <el-button type="info" @click="dialogEdit = false" size="mini">关 闭</el-button>
+        <el-button type="primary" @click="editGoods('editForm')" size="mini">提 交</el-button>
       </span>
     </el-dialog>
   </div>
@@ -234,10 +178,25 @@
 <script>
 
 import commonUrl from '../../utils/common';
-
+import { PositiveInt } from '../../utils/validate'
 export default {
   name: 'SearchGoods',
   data () {
+    let validateZNum = (rule, value, callback) => {
+      if (!PositiveInt(value)) {
+        callback(new Error("请输入大于0的整数"));
+      } else {
+        callback();
+      }
+    };
+    let validatePrice = (rule, value, callback) => {
+      let reg = /(^[1-9]\d*(\.\d{1,2})?$)|(^0(\.\d{1,2})?$)/;
+      if (!reg.test(value)) {
+        callback(new Error('最多两位小数'))
+      } else {
+        callback();
+      }
+    }
     return {
       // 主列表
       tableLoading: false,
@@ -266,6 +225,63 @@ export default {
         supplier: '',
         total_count: '',
         typeid: ''
+      },
+      // 编辑商品
+      dialogEdit: false,
+      edit_loading: false,
+      editForm: {
+        goods_desc: '',
+        goods_name: '',
+        goods_order: '',
+        made_place: '',
+        price: '',
+        src_price: '',
+        stock: '',
+        supplier: '',
+        total_count: '',
+        typeid: '',
+        unit: '',
+      },
+      editRules: {
+        goods_name: [
+          { required: true, message: '请输入商品名称', trigger: 'blur' },
+          { min: 3, max: 15, message: '长度在 3 到 15 个字符', trigger: 'blur' }
+        ],
+        // type_name: [
+        //   { required: true, message: '请选择商品类型', trigger: 'change' }
+        // ],
+        price: [
+          { required: true, validator: validatePrice, trigger: 'blur' },
+          { type: "string", message: "请输入商品单价" }
+        ],
+        // active_price:[
+        //   {required:true,validator:validatePrice,trigger:'blur'},
+        //   { type: "number", message: "请输入活动单价" }
+        // ],
+        src_price: [
+          { required: true, validator: validatePrice, trigger: 'blur' },
+          { type: "string", message: "请输入商品原价" }
+        ],
+        stock: [
+          { required: true, validator: validateZNum, trigger: 'blur' },
+          { type: "string", message: "请输入库存" }
+        ],
+        made_place: [
+          { required: true, message: '请输入商品产地', trigger: 'blur' },
+        ],
+        supplier: [
+          { required: true, message: '请输入商品供应商', trigger: 'blur' },
+        ],
+        goods_order: [
+          { required: true, validator: validateZNum, trigger: 'blur' },
+          { type: "number", message: "请输入商品权重" }
+        ],
+        unit: [
+          { required: true, message: '请输入商品规格', trigger: 'change' }
+        ],
+        goods_desc: [
+          { required: true, message: '请填写商品描述', trigger: 'blur' }
+        ]
       },
       // 所属机构的详情
       agent_detail_dialogVisible: false,
@@ -317,10 +333,71 @@ export default {
     this.getGoodsCatogory()
   },
   methods: {
+    // 编辑操作-获取详情
+    initEdit (row) {
+      // 参数
+      let param = {
+        goodsid: row.goodsid
+      };
+      let that = this
+      this.dialogEdit = true;
+      this.edit_loading = true;
+      this.$http
+        .post(`${commonUrl.baseUrl}/manage/goods/getGoodsDetail`, param)
+        .then(res => {
+          if (res.data.code == "0000") {
+            // 数据赋值
 
-    // 提交
-    submitCreateGoods () {
+            let gdata = res.data.data.goodsDetail
 
+            this.editForm.goods_name = gdata.goods_name
+            this.editForm.goods_desc = gdata.goods_desc
+            this.editForm.goods_order = gdata.goods_order
+            this.editForm.made_place = gdata.made_place
+            this.editForm.price = gdata.price / 100
+            this.editForm.src_price = gdata.src_price / 100
+            this.editForm.stock = gdata.stock
+            this.editForm.supplier = gdata.supplier
+            this.editForm.total_count = gdata.total_count
+            this.editForm.typeid = gdata.typeid
+            this.editForm.unit = gdata.unit
+            this.edit_loading = false;
+          } else {
+            this.edit_loading = false;
+            this.m_message(res.data.msg, 'error');
+          }
+        })
+        .catch(err => { });
+    },
+    // 编辑商品后提交操作
+    editGoods (formName) {
+      this.$refs[formName].validate((valid) => {
+        let { goods_name, price, src_price, total_count, stock, made_place, supplier,  goods_order, unit, goods_desc } = this.editForm;
+        price *= 100       
+        src_price *= 100
+        let goodsInfo = {
+          goods_name,  price,  src_price, total_count, stock, made_place, supplier, goods_order, unit, goods_desc
+        }
+        let param = {          
+          goodsInfo
+        }
+        this.edit_loading = true;
+        this.$http.post(`${commonUrl.baseUrl}/manage/goods/editGoodsInfo`, param).then(res => {
+          
+          res = res.data
+          if (res.code === '0000') {
+            this.$message.success(res.msg)
+            this.edit_loading = false
+            this.dialogEdit = false
+          } else {
+            this.$message.error(res.msg)
+            this.edit_loading = false
+          }
+
+        }).catch(err => {
+
+        })
+      })
     },
     // 新增时初始化商品数据
     initGoods () {
@@ -379,8 +456,8 @@ export default {
 
             this.detailForm.goods_order = gdata.goods_order
             this.detailForm.made_place = gdata.made_place
-            this.detailForm.price = gdata.price
-            this.detailForm.src_price = gdata.src_price
+            this.detailForm.price = gdata.price / 100
+            this.detailForm.src_price = gdata.src_price / 100
             this.detailForm.stock = gdata.stock
             this.detailForm.supplier = gdata.supplier
             this.detailForm.total_count = gdata.total_count

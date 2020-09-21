@@ -63,6 +63,7 @@
 
           </template>
         </el-table-column>
+        <el-table-column prop="createtime" show-overflow-tooltip label="创建时间" width=""></el-table-column>
         <el-table-column prop="" label="操作" width="80">
           <template slot-scope="scope">
             <el-button @click="handle_detail(scope.row)" type="text" size="small">订单详情</el-button>
