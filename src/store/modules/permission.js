@@ -1,8 +1,4 @@
-import {
-  asyncRoutes,
-  constantRoutes
-} from '@/router'
-
+import { asyncRoutes, constantRoutes } from '@/router'
 
 /**
  * Use meta.role to determine if the current user has permission
@@ -11,7 +7,7 @@ import {
  */
 function hasPermission(roles, route) {
   if (route.meta && route.meta.roles) {
-    return roles.some(role => route.meta.roles.includes(role))
+    return roles.some((role) => route.meta.roles.includes(role))
   } else {
     return true
   }
@@ -21,10 +17,9 @@ function setServeMap(routerMap) {
   console.log(routerMap)
   //深克隆
   let cloneData = JSON.parse(JSON.stringify(routerMap))
-  return cloneData.map(val => {
+  return cloneData.map((val) => {
     return modifyMenu(val)
   })
-
 
   // 父级id ===  子级 pid
   // return cloneData.filter(father => {
@@ -34,77 +29,75 @@ function setServeMap(routerMap) {
 
   //   return father['pid'] == 0 // 目前一级 pid：0
   // })
-
 }
 
 // 递归处理菜单
 function modifyMenu(data) {
   // 一级菜单特有属性
   if (data.pid == 0) {
-    data['component'] = 'Layout';
-    data['alwaysShow'] = true;
-    
-  } else { //其他子级需要 component为path对应的值
-    data['component'] = data.path.startsWith('/') ? data.path.slice(1) : data.path;
+    data['component'] = 'Layout'
+    data['alwaysShow'] = true
+  } else {
+    //其他子级需要 component为path对应的值
+    data['component'] = data.path.startsWith('/')
+      ? data.path.slice(1)
+      : data.path
     data['path'] = data.path.slice(1)
     // data['component'] = 'gp' +data['component']
     // console.log(data['component'])
   }
   //data['path'] = data.authority.startsWith('/')?data.authority:'/'+data.authority;
-  data['name'] = data.functionname;
+  data['name'] = data.functionname
   data['meta'] = {
     title: data.functionname,
-    icon: data.path.slice(1)
+    icon: data.path.slice(1),
   }
   if (data.subAuthority && data.pid == 0) {
-    data['redirect'] = data.path+data.subAuthority[0].path;
-    data['children'] = [];
-    data.subAuthority.map(item => {
+    data['redirect'] = data.path + data.subAuthority[0].path
+    data['children'] = []
+    data.subAuthority.map((item) => {
       data['children'].push(modifyMenu(item))
     })
   }
 
-  return data;
-
+  return data
 }
 // 修正数据
 function modifyKeys(data) {
-
   for (let i = 0; i < data.length; i++) {
     //父级
-    let item = data[i];
+    let item = data[i]
     if (item.children) {
       // 父级 path
 
       // alwaysShow: true
-      let _index = item.path.indexOf('/');
+      let _index = item.path.indexOf('/')
       if (_index > -1) {
-        var _icon_name = item.path.slice(_index + 1);
+        var _icon_name = item.path.slice(_index + 1)
       }
-      item['component'] = 'Layout'; // 一级菜单强行加 Layout
-      item['alwaysShow'] = true;
+      item['component'] = 'Layout' // 一级菜单强行加 Layout
+      item['alwaysShow'] = true
       // meta
       item['meta'] = {
         title: item.menu_name,
-        icon: _icon_name
+        icon: _icon_name,
       }
       if (item.hasOwnProperty('children')) {
         //注意 children是数组
         for (let i = 0; i < item.children.length; i++) {
-
           // meta
           item['children'][i]['meta'] = {
-            title: item.children[i].menu_name
+            title: item.children[i].menu_name,
           }
           // component  name
-          item.children[i]['name'] = item.children[i].path;
-          item.children[i]['component'] = item.children[i].path;
+          item.children[i]['name'] = item.children[i].path
+          item.children[i]['component'] = item.children[i].path
         }
       }
     }
   }
 
-  return data;
+  return data
 }
 /**
  * Filter asynchronous routing tables by recursion
@@ -114,9 +107,9 @@ function modifyKeys(data) {
 export function filterAsyncRoutes(routes, roles) {
   const res = []
 
-  routes.forEach(route => {
+  routes.forEach((route) => {
     const tmp = {
-      ...route
+      ...route,
     }
     if (hasPermission(roles, tmp)) {
       if (tmp.children) {
@@ -131,14 +124,14 @@ export function filterAsyncRoutes(routes, roles) {
 
 const state = {
   routes: [],
-  addRoutes: []
+  addRoutes: [],
 }
 
 const mutations = {
   SET_ROUTES: (state, routes) => {
     state.addRoutes = routes
     state.routes = constantRoutes.concat(routes)
-  }
+  },
 }
 const fya_routerMap = {
   Layout: () => import('@/layout/index'),
@@ -147,27 +140,30 @@ const fya_routerMap = {
   roleLIst: () => import('@/views/roleLIst/roleLIst'), //权限组管理
   userList: () => import('@/views/userList/userList'), //操作员管理
 
-  // 2**商品管理/diliver"  
+  // 2**商品管理/diliver"
   searchGoods: () => import('@/views/searchGoods/searchGoods'), //商品查询
   createGoods: () => import('@/views/createGoods/createGoods'), //商品创建
 
-  // 3**订单管理 /order  
-  searchOrder: ()=>import('@/views/searchOrder/searchOrder'),
+  // 3**订单管理 /order
+  searchOrder: () => import('@/views/searchOrder/searchOrder'), //订单查询
 
+  // 4**财务管理 /financal
+  searchWithdrawOrder: () =>
+    import('@/views/searchWithdrawOrder/searchWithdrawOrder'), //提现查询
 
-
-
+  // 5**用户管理 /customManage
+  searchCustomUser: () => import('@/views/searchCustomUser/searchCustomUser'), //用户查询
+  searchSite: () => import('@/views/searchSite/searchSite'), //站点查询
 
   // =================================================================================================================
-
-
-
 
   // 招商中心管理  merchantCenter
   merchantAgent: () => import('@/views/merchantAgent/merchantAgent'), //招商中心机构管理
   merchantUser: () => import('@/views/merchantUser/merchantUser'), // 招商中心人员管理
-  merchantCenterCheck: () => import('@/views/merchantCenterCheck/merchantCenterCheck'), //招商中心审核
-  allMerchantCenter: () => import('@/views/allMerchantCenter/allMerchantCenter'), //招商中心详情
+  merchantCenterCheck: () =>
+    import('@/views/merchantCenterCheck/merchantCenterCheck'), //招商中心审核
+  allMerchantCenter: () =>
+    import('@/views/allMerchantCenter/allMerchantCenter'), //招商中心详情
 
   // 区域业务管理   region
   manageArea: () => import('@/views/manageArea/manageArea'), //业务人员管理
@@ -177,7 +173,6 @@ const fya_routerMap = {
   // **机构管理      mechanism
   agentCheck: () => import('@/views/agentCheck/agentCheck'), //**机构审核
   agentDetails: () => import('@/views/agentDetails/agentDetails'), //**机构列表
-
 
   subordinateAgent: () => import('@/views/subordinateAgent/subordinateAgent'), // 机构下属查询
   travelerCheck: () => import('@/views/travelerCheck/travelerCheck'), // 角落向导审核
@@ -189,17 +184,23 @@ const fya_routerMap = {
   recharge: () => import('@/views/recharge/recharge'), //充值收益
   proceedsCash: () => import('@/views/proceedsCash/proceedsCash'), //收益提现
 
-  agentAccountExamine: () => import('@/views/agentAccountExamine/agentAccountExamine'), //机构受益划拨审核
-  agentAccountRecord: () => import('@/views/agentAccountRecord/agentAccountRecord'), //机构受益划拨记录
+  agentAccountExamine: () =>
+    import('@/views/agentAccountExamine/agentAccountExamine'), //机构受益划拨审核
+  agentAccountRecord: () =>
+    import('@/views/agentAccountRecord/agentAccountRecord'), //机构受益划拨记录
   withdraw: () => import('@/views/withdraw/withdraw'), //向导提现
-  agentRechargeList: () => import('@/views/agentRechargeList/agentRechargeList'), //机构红包充值
-  rechargeCheckList: () => import('@/views/rechargeCheckList/rechargeCheckList'), //机构充值审核
-  rechargeRecordList: () => import('@/views/rechargeRecordList/rechargeRecordList'), //机构充值记录
+  agentRechargeList: () =>
+    import('@/views/agentRechargeList/agentRechargeList'), //机构红包充值
+  rechargeCheckList: () =>
+    import('@/views/rechargeCheckList/rechargeCheckList'), //机构充值审核
+  rechargeRecordList: () =>
+    import('@/views/rechargeRecordList/rechargeRecordList'), //机构充值记录
 
   // **运营管理  operate
 
   atmosphere: () => import('@/views/atmosphere/atmosphere'), // 氛围号管理
-  identityInfoManage: () => import('@/views/identityInfoManage/identityInfoManage'), // 认证管理
+  identityInfoManage: () =>
+    import('@/views/identityInfoManage/identityInfoManage'), // 认证管理
   customPhotoCheck: () => import('@/views/customPhotoCheck/customPhotoCheck'), // 照片审核
   activitys: () => import('@/views/activitys/activitys'), // 活动管理
 
@@ -213,12 +214,15 @@ const fya_routerMap = {
 
   // **用户管理     customer
   customInfo: () => import('@/views/customInfo/customInfo'), //用户查询
-  consumeOrderUnion: () => import('@/views/consumeOrderUnion/consumeOrderUnion'), //消费记录
+  consumeOrderUnion: () =>
+    import('@/views/consumeOrderUnion/consumeOrderUnion'), //消费记录
   customOrder: () => import('@/views/customOrder/customOrder'), //出行记录
   travelRecord: () => import('@/views/travelRecord/travelRecord'), // 直播记录
-  virtualConsumeRecord: () => import('@/views/virtualConsumeRecord/virtualConsumeRecord'), //贝壳消费记录
+  virtualConsumeRecord: () =>
+    import('@/views/virtualConsumeRecord/virtualConsumeRecord'), //贝壳消费记录
   chatInfoRecord: () => import('@/views/chatInfoRecord/chatInfoRecord'), // 即时聊天记录
-  InvitationOnlineRecord: () => import('@/views/InvitationOnlineRecord/InvitationOnlineRecord'), //邀约上线记录
+  InvitationOnlineRecord: () =>
+    import('@/views/InvitationOnlineRecord/InvitationOnlineRecord'), //邀约上线记录
   // 系统设置     system
   sysRole: () => import('@/views/sysRole/sysRole'), // 角色管理
   sysUser: () => import('@/views/sysUser/sysUser'), // 用户管理
@@ -226,7 +230,7 @@ const fya_routerMap = {
   messageInfo: () => import('@/views/messageInfo/messageInfo'), //消息提示
 
   // 推送管理    push
-  IMpush: () => import('@/views/IMpush/IMpush') //信息推送
+  IMpush: () => import('@/views/IMpush/IMpush'), //信息推送
 }
 
 function generateAsyncRouter(routerMap, serverRouterMap) {
@@ -236,7 +240,7 @@ function generateAsyncRouter(routerMap, serverRouterMap) {
       generateAsyncRouter(routerMap, item.children)
     }
   })
-  return serverRouterMap;
+  return serverRouterMap
 }
 const actions = {
   // generateRoutes({ commit }, roles) {
@@ -251,13 +255,10 @@ const actions = {
   //     resolve(accessedRoutes)
   //   })
   // }
-  generateRoutes({
-    commit
-  }, list) {
-    return new Promise(resolve => {
-
+  generateRoutes({ commit }, list) {
+    return new Promise((resolve) => {
       const fya_list = setServeMap(list)
-      
+
       // console.log(fya_list)
       // debugger
       // const gp_list = modifyKeys(fya_list)
@@ -269,17 +270,17 @@ const actions = {
       asyncRouterMap.push({
         path: '*',
         redirect: '/404',
-        hidden: true
+        hidden: true,
       })
       commit('SET_ROUTES', asyncRouterMap)
       resolve(asyncRouterMap)
     })
-  }
+  },
 }
 
 export default {
   namespaced: true,
   state,
   mutations,
-  actions
+  actions,
 }

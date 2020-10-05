@@ -139,7 +139,7 @@ export default {
           { required: true, message: '请输入商品名称', trigger: 'blur' },
           { min: 3, max: 15, message: '长度在 3 到 15 个字符', trigger: 'blur' }
         ],
-        type_name: [
+        typeid: [
           { required: true, message: '请选择商品类型', trigger: 'change' }
         ],
         price:[
@@ -231,7 +231,8 @@ export default {
     resetForm (formName) {
       this.$refs[formName].resetFields();
     },
-
+    
+    // 上传文件接口
     handlePost (content) {
       
       var uploadData = new FormData()

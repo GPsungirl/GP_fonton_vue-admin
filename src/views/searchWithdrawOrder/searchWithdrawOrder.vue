@@ -1,5 +1,5 @@
 <template>
-  <!-- 订单列表 -->
+  <!-- 财务提现列表 -->
   <div class="pad_5">
     <!-- M1 查询区域 -->
     <div class="query_fields pad_b_no handle_timerange">
@@ -10,36 +10,35 @@
         size="mini"
         class="demo-form-inline"
       >
-        <el-form-item label="订单编号" prop="orderid" label-width="68px">
+        <!-- <el-form-item label="订单编号" prop="orderid" label-width="68px">
           <el-input
             v-model="queryForm.orderid"
             placeholder="订单编号"
             class="wid_140"
           ></el-input>
-        </el-form-item>
-        <!-- 用户姓名 custom_name-->
-        <el-form-item label="手机号码" prop="user_phone" label-width="68px">
+        </el-form-item> -->
+
+        <!-- <el-form-item label="手机号码" prop="user_phone" label-width="68px">
           <el-input
             v-model="queryForm.user_phone"
             placeholder="手机号码"
             class="wid_140"
           ></el-input>
-        </el-form-item>
-        <!-- 订单状态 -->
-        <el-form-item label="订单状态" prop="orderStatus">
+        </el-form-item> -->
+        <!-- 提现状态 -->
+        <!-- 提现状态 0处理中 1提现成功 2提现失败 3作废 -->
+        <el-form-item label="提现状态" prop="withdrawStatus ">
           <el-select
-            v-model="queryForm.orderStatus"
-            placeholder="请选择订单状态"
+            v-model="queryForm.withdrawStatus"
+            placeholder="请选择提现状态"
           >
             <el-option label="全部" value=""></el-option>
-            <el-option label="待支付" value="0"></el-option>
-            <el-option label="已支付" value="1"></el-option>
-            <el-option label="配送中" value="3"></el-option>
-            <el-option label="已完成" value="4"></el-option>
-            <el-option label="已取消" value="10"></el-option>
+            <el-option label="处理中" value="0"></el-option>
+            <el-option label="提现成功" value="1"></el-option>
+            <!-- <el-option label="作废" value="3"></el-option> -->
           </el-select>
         </el-form-item>
-        <el-form-item label="所属门店" prop="siteid" label-width="68px">
+        <!-- <el-form-item label="所属门店" prop="siteid" label-width="68px">
           <el-select
             v-model="queryForm.siteid"
             placeholder="所属门店"
@@ -52,7 +51,7 @@
               :value="item.siteid"
             ></el-option>
           </el-select>
-        </el-form-item>
+        </el-form-item> -->
         <!-- 订单时间 -->
         <!-- <el-form-item label="订单时间" prop="allTime">
           <el-date-picker v-model="queryForm.allTime" type="daterange" value-format="yyyy-MM-dd" range-separator="至" start-placeholder="开始时间"
@@ -83,60 +82,51 @@
         stripe
         style="width: 100%;"
       >
-        <!-- orderid 订单id   user_name 用户姓名 user_phone 用户手机号 user_address 用户地址  user_detail_address  详细地址 -->
+        <!-- 提现银行card_bank 账户名card_username  银行号cardno 创建时间createtime  用户昵称userNickname  提现状态 withdraw_status-->
         <el-table-column
-          prop="orderid"
+          prop="withdrawid"
           label="订单编号"
           :show-overflow-tooltip="true"
           width
         ></el-table-column>
         <el-table-column
-          prop="user_name"
-          label="用户姓名"
+          prop="card_bank"
+          label=" 提现银行"
           width="80"
         ></el-table-column>
         <el-table-column
-          prop="user_phone"
-          label="用户手机号"
+          prop="card_username"
+          label=" 账户名"
           width=""
         ></el-table-column>
-        <!-- <el-table-column prop="user_address" label="用户地址" width="150"></el-table-column>
-        <el-table-column prop="user_detail_address" label="详细地址" width="260"></el-table-column> -->
-        <el-table-column
-          prop="siteName"
-          label=" 站点名"
-          width
-        ></el-table-column>
-        <el-table-column prop="" label=" 总价" width="80">
-          <template slot-scope="scope">
-            {{ scope.row.total_price / 100 }}
-          </template>
-        </el-table-column>
-        <el-table-column prop label="订单状态" width="80">
-          <template slot-scope="scope">
-            <span v-if="scope.row.order_status == 0">待支付</span>
-            <span v-else-if="scope.row.order_status == 1">已支付</span>
-            <span v-else-if="scope.row.order_status == 2">配货中</span>
-            <span v-else-if="scope.row.order_status == 3">运输中</span>
-            <span v-else-if="scope.row.order_status == 4">签收</span>
-            <span v-else-if="scope.row.order_status == 5">评价</span>
-            <span v-else-if="scope.row.order_status == 6">取消中</span>
-            <span v-else-if="scope.row.order_status == 7">退货中</span>
-            <span v-else-if="scope.row.order_status == 8">订单创建</span>
-            <span v-else-if="scope.row.order_status == 9">无效订单</span>
-            <span v-else-if="scope.row.order_status == 10">已取消</span>
-            <span v-else-if="scope.row.order_status == 11">取消失败</span>
-            <span v-else-if="scope.row.order_status == 12">已退货</span>
-            <span v-else-if="scope.row.order_status == 13">退货失败</span>
-            <span v-else-if="scope.row.order_status == 14">已送达</span>
-          </template>
-        </el-table-column>
         <el-table-column
           prop="createtime"
-          show-overflow-tooltip
           label="创建时间"
           width=""
         ></el-table-column>
+        <el-table-column
+          prop="userNickname"
+          label="用户昵称"
+          width=""
+        ></el-table-column>
+        <el-table-column prop="cardno" label=" 银行号" width></el-table-column>
+        <el-table-column
+          prop="siteName"
+          label="站点名称"
+          width
+        ></el-table-column>
+        <!-- <el-table-column prop="" label=" 总价" width="80">
+          <template slot-scope="scope">
+            {{ scope.row.total_price / 100 }}
+          </template>
+        </el-table-column> -->
+        <el-table-column prop label="提现状态" width="80">
+          <template slot-scope="scope">
+            <span v-if="scope.row.withdraw_status == 0">处理中</span>
+            <span v-if="scope.row.withdraw_status == 1">提现成功</span>
+            <span v-if="scope.row.withdraw_status == 3">作废</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="" label="操作" width="80">
           <template slot-scope="scope">
             <el-button
@@ -144,7 +134,15 @@
               type="text"
               size="small"
             >
-              订单详情
+              详情
+            </el-button>
+            <el-button
+              v-if="scope.row.withdraw_status == 0"
+              @click="handle_frozen(scope.row)"
+              type="text"
+              size="small"
+            >
+              提现成功
             </el-button>
           </template>
         </el-table-column>
@@ -164,7 +162,7 @@
     <el-dialog
       title="订单详情"
       :visible.sync="dialogVisible_detail"
-      width="80%"
+      width="40%"
       top="10px"
       class="addUsers_dialog"
       center
@@ -176,136 +174,70 @@
       <!--新增 body -->
       <div class="dialogBody_addPermission">
         <div class="grid-content bg-purple-dark pad_t2">
+          <!-- 提现银行 card_bank 账户名 card_username  银行号 cardno 创建时间 createtime  用户昵称 userNickname  提现状态 withdraw_status-->
           <el-form
             :inline="true"
             :model="detailForm"
             label-width="100px"
             class="demo-form-inline valid_form"
           >
-            <el-form-item label="订单ID">
+            <el-form-item label="提现银行">
               <el-input
-                v-model="detailForm.orderid"
+                v-model="detailForm.card_bank"
                 :disabled="true"
                 class="wid_180"
                 placeholder
               ></el-input>
             </el-form-item>
-            <el-form-item label="用户姓名">
+            <el-form-item label="账户名">
               <el-input
-                v-model="detailForm.user_name"
+                v-model="detailForm.card_username"
                 :disabled="true"
                 class="wid_180"
                 placeholder
               ></el-input>
             </el-form-item>
-            <el-form-item label="用户手机号">
+            <el-form-item label="银行号">
               <el-input
-                v-model="detailForm.user_phone"
+                v-model="detailForm.cardno"
                 :disabled="true"
                 class="wid_180"
                 placeholder
               ></el-input>
             </el-form-item>
-            <el-form-item label="用户地址">
+            <el-form-item label="创建时间">
               <el-input
-                v-model="detailForm.user_address"
+                v-model="detailForm.createtime"
                 :disabled="true"
                 class="wid_180"
                 placeholder
               ></el-input>
             </el-form-item>
-            <el-form-item label="地详细地址址">
+            <el-form-item label="用户昵称">
               <el-input
-                v-model="detailForm.user_detail_address"
+                v-model="detailForm.userNickname"
                 :disabled="true"
                 class="wid_180"
                 placeholder
               ></el-input>
             </el-form-item>
-            <el-form-item label="订单状态">
+            <el-form-item label="提现状态">
               <el-input
-                v-model="detailForm.order_status"
+                v-model="detailForm.withdraw_status"
                 :disabled="true"
                 class="wid_180"
                 placeholder
               ></el-input>
             </el-form-item>
-
-            <!-- <el-form-item label="用户状态">
+            <el-form-item label="站点名称">
               <el-input
-                v-model="detailForm.custom_status"
+                v-model="detailForm.siteName"
                 :disabled="true"
-                class="wid_140"
+                class="wid_180"
                 placeholder
               ></el-input>
-            </el-form-item> -->
+            </el-form-item>
           </el-form>
-
-          <!-- 展示订单商品 -->
-          <!-- goodsid 商品 id  goods_name 商品名称  unit单位  goods_img 商品 logourl   price 单价   src_price 原价  goods_count 商品数量   total_price总价 -->
-          <p>下单商品列表：</p>
-          <div class="detailGoodsTable">
-            <el-table
-              :data="tableDataGoods"
-              v-loading="tableLoadingGoods"
-              border
-              stripe
-              style="width: 100%;"
-            >
-              <el-table-column
-                prop="goodsid"
-                label="商品ID"
-                :show-overflow-tooltip="true"
-                width
-              ></el-table-column>
-              <el-table-column
-                prop="goods_name"
-                label="商品名称"
-                :show-overflow-tooltip="true"
-                width
-              ></el-table-column>
-              <el-table-column
-                prop="unit"
-                label="单位"
-                :show-overflow-tooltip="true"
-                width
-              ></el-table-column>
-              <el-table-column
-                prop="goods_img"
-                label="商品图"
-                :show-overflow-tooltip="true"
-                width
-              >
-                <template slot-scope="scope">
-                  <div style="widht: 60px;">
-                    <img
-                      :src="`${imgHttpUrl}` + scope.row.goods_img"
-                      alt=""
-                      style="width: 60px;"
-                    />
-                  </div>
-                </template>
-              </el-table-column>
-              <el-table-column
-                prop="price"
-                label="单价"
-                :show-overflow-tooltip="true"
-                width
-              ></el-table-column>
-              <el-table-column
-                prop="goods_count"
-                label="商品数量"
-                :show-overflow-tooltip="true"
-                width
-              ></el-table-column>
-              <el-table-column
-                prop="total_price"
-                label="总价"
-                :show-overflow-tooltip="true"
-                width
-              ></el-table-column>
-            </el-table>
-          </div>
         </div>
       </div>
 
@@ -520,7 +452,7 @@ export default {
         orderid: '',
         user_phone: '',
         siteids: [],
-        orderStatus: '',
+        withdrawStatus: '',
         virtual_classs: [
           {
             id: 1,
@@ -625,7 +557,7 @@ export default {
     this.imgHttpUrl = commonUrl.baseUrl
 
     // 初始化所有门店
-    this.getSiteids()
+    //this.getSiteids()
     // 初始化订单列表
     this.getOrderList(1)
   },
@@ -634,20 +566,20 @@ export default {
     getOrderList(pageNum) {
       // 参数
       let param = {
-        siteid: this.queryForm.siteid,
-        orderid: this.queryForm.orderid,
-        phone: this.queryForm.user_phone,
-        orderStatus: this.queryForm.orderStatus,
+        // siteid: this.queryForm.siteid,
+        // orderid: this.queryForm.orderid,
+        // phone: this.queryForm.user_phone,
+        withdrawStatus: this.queryForm.withdrawStatus,
         page_num: pageNum,
         page_count: 10,
       }
       this.tableLoading = true
       this.$http
-        .post(`${commonUrl.baseUrl}/manage/order/searchtMerchantOrder`, param)
+        .post(`${commonUrl.baseUrl}/manage/account/searchWithdrawOrder`, param)
         .then((res) => {
           if (res.data.code == '0000') {
             console.log(res)
-            this.tableData = res.data.data.orderList
+            this.tableData = res.data.data.withdrawList
             // 分页 总数
             this.pageTotal = res.data.page.page_total
             // 关闭加载
@@ -672,207 +604,150 @@ export default {
     // ***详情操作 @params:row:当前行数据
     handle_detail(row, type) {
       // 参数
-      let param = {
-        orderid: row.orderid,
-      }
+      // let param = {
+      //   orderid: row.orderid,
+      // }
+      //  提现银行 card_bank 账户名 card_username  银行号 cardno 创建时间 createtime  用户昵称 userNickname 站点名称 siteName  提现状态 withdraw_status
       // 开弹框
+      this.detailForm.card_bank = row.card_bank
+      this.detailForm.card_username = row.card_username
+      this.detailForm.cardno = row.cardno
+      this.detailForm.createtime = row.createtime
+      this.detailForm.userNickname = row.userNickname
+      this.detailForm.siteName = row.siteName
+      if (row.withdraw_status == 0) {
+        this.detailForm.withdraw_status = '处理中'
+      } else if (row.withdraw_status == 1) {
+        this.detailForm.withdraw_status = '提现成功'
+      }
+      // this.detailForm.withdraw_status = row.withdraw_status
+
       this.dialogVisible_detail = true
       // 加载中
-      this.add_loading = true
-      this.$http
-        .post(`${commonUrl.baseUrl}/manage/order/getOrderDetail`, param)
-        .then((res) => {
-          if (res.data.code == '0000') {
-            // 数据赋值
-            let result = res.data.data.orderInfo
-            this.detailForm.orderid = result.orderid
-            this.detailForm.user_name = result.user_name
-            this.detailForm.user_phone = result.user_phone
-            this.detailForm.user_address = result.user_address
-            this.detailForm.user_detail_address = result.user_detail_address
-            //  状态 0待支付 1已支付 2配货中 3运输中 4签收 5评价 6取消中 7退货中 8订单创建  9无效订单 10已取消  11取消失败  12以退货  13退货失败  14已送达
-            switch (result.order_status) {
-              case 0:
-                this.detailForm.order_status = '待支付'
-                break
-              case 1:
-                this.detailForm.order_status = '已支付'
-                break
-              case 2:
-                this.detailForm.order_status = '配货中'
-                break
-              case 3:
-                this.detailForm.order_status = '运输中'
-                break
-              case 4:
-                this.detailForm.order_status = '签收'
-                break
-              case 5:
-                this.detailForm.order_status = '评价'
-                break
-              case 6:
-                this.detailForm.order_status = '取消中'
-                break
-              case 7:
-                this.detailForm.order_status = '退货中'
-                break
+      // this.add_loading = true
+      // this.$http
+      //   .post(`${commonUrl.baseUrl}/manage/order/getOrderDetail`, param)
+      //   .then((res) => {
+      //     if (res.data.code == '0000') {
+      //       // 数据赋值
+      //       let result = res.data.data.orderInfo
+      //       this.detailForm.orderid = result.orderid
+      //       this.detailForm.user_name = result.user_name
+      //       this.detailForm.user_phone = result.user_phone
+      //       this.detailForm.user_address = result.user_address
+      //       this.detailForm.user_detail_address = result.user_detail_address
+      //       //  状态 0待支付 1已支付 2配货中 3运输中 4签收 5评价 6取消中 7退货中 8订单创建  9无效订单 10已取消  11取消失败  12以退货  13退货失败  14已送达
+      //       switch (result.order_status) {
+      //         case 0:
+      //           this.detailForm.order_status = '待支付'
+      //           break
+      //         case 1:
+      //           this.detailForm.order_status = '已支付'
+      //           break
+      //         case 2:
+      //           this.detailForm.order_status = '配货中'
+      //           break
+      //         case 3:
+      //           this.detailForm.order_status = '运输中'
+      //           break
+      //         case 4:
+      //           this.detailForm.order_status = '签收'
+      //           break
+      //         case 5:
+      //           this.detailForm.order_status = '评价'
+      //           break
+      //         case 6:
+      //           this.detailForm.order_status = '取消中'
+      //           break
+      //         case 7:
+      //           this.detailForm.order_status = '退货中'
+      //           break
 
-              case 8:
-                this.detailForm.order_status = '订单创建'
-                break
-              case 9:
-                this.detailForm.order_status = '无效订单'
-                break
-              case 10:
-                this.detailForm.order_status = '已取消'
-                break
-              case 11:
-                this.detailForm.order_status = '取消失败'
-                break
-              case 12:
-                this.detailForm.order_status = '已退货'
-                break
-              case 13:
-                this.detailForm.order_status = '退货失败'
-                break
-              case 14:
-                this.detailForm.order_status = '已送达'
-                break
-            }
+      //         case 8:
+      //           this.detailForm.order_status = '订单创建'
+      //           break
+      //         case 9:
+      //           this.detailForm.order_status = '无效订单'
+      //           break
+      //         case 10:
+      //           this.detailForm.order_status = '已取消'
+      //           break
+      //         case 11:
+      //           this.detailForm.order_status = '取消失败'
+      //           break
+      //         case 12:
+      //           this.detailForm.order_status = '已退货'
+      //           break
+      //         case 13:
+      //           this.detailForm.order_status = '退货失败'
+      //           break
+      //         case 14:
+      //           this.detailForm.order_status = '已送达'
+      //           break
+      //       }
 
-            this.tableDataGoods = result.goodsList
-            // 加载完
-            this.add_loading = false
-          } else {
-            this.add_loading = false
-            this.m_message(res.data.msg, 'error')
-          }
-        })
-        .catch((err) => {})
+      //       this.tableDataGoods = result.goodsList
+      //       // 加载完
+      //       this.add_loading = false
+      //     } else {
+      //       this.add_loading = false
+      //       this.m_message(res.data.msg, 'error')
+      //     }
+      //   })
+      //   .catch((err) => {})
     },
 
-    // 初始化 银行信息
-    getBankList() {
-      this.$http
-        .post(`${commonUrl.baseUrl}/agent/addAgent`, {
-          data: {
-            signInUserId: this.$store.getters.userId,
-            signInRoleId: this.$store.getters.roleId,
-          },
-        })
-        .then((res) => {
-          if (res.data.code == '0000') {
-            // console.log(res)
-            this.bankInfo = this.agent_detail_form.bankInfo =
-              res.data.data.bankList
-          }
-        })
-        .catch((err) => {})
-    },
-    // 初始化主列表
-    getTabelDataList(pageNum) {
-      // 参数
-      let param = {
-        data: {
-          // 公有
-          signInUserId: this.$store.getters.userId,
-          signInRoleId: this.$store.getters.roleId,
-          pageNum: pageNum,
-          pageSize: 10,
-          // 私有
-          // 收益类型
-          virtual_class: this.queryForm.virtual_class,
-          // 所属市级机构
-          city_agent_name: this.queryForm.city_agent_name,
-          // 收益来源ID
-          virtualSourceCustomid: this.queryForm.virtualSourceCustomid,
-          // 用户ID
-          customid: this.queryForm.customid,
-          // 用户姓名
-          custom_name: this.queryForm.custom_name,
-          // 上级ID
-          up_customid: this.queryForm.up_customid,
-          // 上级姓名
-          up_custom_name: this.queryForm.up_custom_name,
-          // 出行项目
-          travel_projects: this.queryForm.travel_projects,
-          // 出行开始时间
-          startTime: this.queryForm.startTime,
-          // 出行结束时间
-          endTime: this.queryForm.endTime,
-        },
+    // *** 提现记录的取消与确认成功
+    handle_frozen(row) {
+      let _flag = ''
+      let _flag_title = ''
+      let _flag_txt = ''
+      if (row.withdraw_status == 0) {
+        _flag = 1
+        _flag_title = '确认提现成功'
+        _flag_txt = '是否确认提现成功?'
       }
-      this.tableLoading = true
-      this.$http
-        .post(`${commonUrl.baseUrl}/virtualProfit/selectVirtualProfit`, param)
-        .then((res) => {
-          // console.log(res)
-          // debugger
-          if (res.data.code == '0000') {
-            this.tableData = res.data.data.virtualProfitList
-            // 分页总数
-            this.pageTotal = res.data.data.page.pageTotal
-            // 关闭加载
-            this.tableLoading = false
-          }
-        })
-        .catch((err) => {})
+      this.$confirm(_flag_txt, _flag_title, {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        size: 'mini',
+        center: true,
+      }).then(() => {
+        let param = {
+          withdrawInfo: {
+            withdraw_status: _flag,
+            withdrawid: row.withdrawid,
+          },
+        }
+        this.$http
+          .post(`${commonUrl.baseUrl}/manage/account/withdrawEdit`, param)
+          .then((res) => {
+            if (res.data.code == '0000') {
+              this.m_message(res.data.msg, 'success')
+              this.handle_refresh()
+            } else {
+              this.m_message(res.data.msg, 'warning')
+            }
+          })
+          .catch((err) => {})
+      })
     },
+
     // 刷新
     handle_refresh() {
       this.getOrderList(this.currentPage)
       // this.currentPage = 1;
     },
 
-    // 导出数据
-    exportData() {
-      let param = {
-        data: {
-          // 公有
-          signInUserId: this.$store.getters.userId,
-          signInRoleId: this.$store.getters.roleId,
-          // 私有
-          // 收益类型
-          virtual_class: this.queryForm.virtual_class,
-          // 所属市级机构
-          city_agent_name: this.queryForm.city_agent_name,
-          // 用户ID
-          customid: this.queryForm.customid,
-          // 出行项目
-          // travel_projects:this.queryForm.travel_projects,
-          // 出行开始时间
-          startTime: this.queryForm.startTime,
-          // 出行结束时间
-          endTime: this.queryForm.endTime,
-        },
-      }
-      this.fullscreenLoading = true
-      window.location.href = `${commonUrl.baseUrl}/virtualProfit/exportVirtualProfit?signInUserId=${param.data.signInUserId}&signInRoleId=${param.data.signInRoleId}&customid=${param.data.customid}&virtual_class=${param.data.virtual_class}&city_agent_name=${param.data.city_agent_name}&startTime=${param.data.startTime}&endTime=${param.data.endTime}`
-      this.fullscreenLoading = false
-      // this.$http.post(`${ commonUrl.baseUrl}/virtualProfit/export`, param).then(res=>{
-      //     if(res.data.code == '0000'){
-      //         this.m_message(res.data.msg, 'success')
-
-      //     }
-      // }).catch(err=>{})
-    },
     // 查询按钮
     queryData() {
-      // if (this.queryForm.allTime.length > 0) {
-      //   // 修正 开始 和结束 时间
-      //   this.queryForm.startTime = this.queryForm.allTime[0];
-      //   this.queryForm.endTime = this.queryForm.allTime[1];
-      // }
-
       this.getOrderList(1)
       this.currentPage = 1
     },
     // 重置按钮
     resetData(formName) {
       this.$refs[formName].resetFields()
-      // 对于queryForm 下拉
-      // this.queryForm.startTime = "";
-      // this.queryForm.endTime = "";
     },
     // 分页
     handleCurrentChange(val) {
@@ -887,66 +762,6 @@ export default {
         message,
         type,
       })
-    },
-    // 查 市区 txt: String 省份名,dataOrigin 是指 add_form  或是queryeForm 这种 父级数据源
-    queryCity(txt, dataOrigin) {
-      let vm = this
-      // 搜索所有省/直辖市信息
-
-      this.districtSearch.search(txt, function (status, result) {
-        // console.log(result)
-        // 查询成功时，result即为对应的行政区信息
-        for (let item of result.districtList[0].districtList) {
-          vm[dataOrigin].cities.push({
-            adcode: item.adcode,
-            city: item.customname,
-          })
-        }
-      })
-    },
-    // 针对 account_cities这个特殊（后期合并方法***）
-    queryBankCity(txt, dataOrigin) {
-      let vm = this
-      // 搜索所有省/直辖市信息
-
-      this.districtSearch.search(txt, function (status, result) {
-        // 查询成功时，result即为对应的行政区信息
-        for (let item of result.districtList[0].districtList) {
-          vm[dataOrigin].account_cities.push({
-            adcode: item.adcode,
-            city: item.name,
-          })
-        }
-      })
-    },
-    // 初始化 地图
-    initMap() {
-      let vm = this
-      //利用高德地图API 获取 所有省
-      AMap.plugin('AMap.DistrictSearch', function () {
-        vm.districtSearch = new AMap.DistrictSearch({
-          // 关键字对应的行政区级别，country表示国家
-          level: 'city',
-          //  显示下级行政区级数，1表示返回下一级行政区
-          subdistrict: 1,
-        })
-      })
-    },
-    // 初始化 省份数据
-    initProvinces() {
-      // 处理一下 数据
-      let arr = []
-      for (let i in provinces.province_list) {
-        arr.push({
-          adcode: i,
-          province: provinces.province_list[i],
-        })
-      }
-      this.queryForm.regions = arr
-      // 详情
-      this.detailForm.regions = this.detailForm.account_regions = arr
-      // 详情并修改
-      this.agent_detail_form.regions = this.agent_detail_form.account_regions = arr
     },
   },
 }
